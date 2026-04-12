@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -135,7 +135,7 @@
             border-radius: 6px;
             background: var(--highlight);
         }
-        
+
         .basket-item {
             display: flex;
             justify-content: space-between;
@@ -169,12 +169,12 @@
     </div>
 
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('worker')">หางาน (Worker)</div>
-        <div class="tab" onclick="switchTab('hiring')">หาพนักงาน (Hiring)</div>
+        <div class="tab active" onclick="switchTab('worker', event)">Find a Job (Worker)</div>
+        <div class="tab" onclick="switchTab('hiring', event)">Hire Employees (Hiring)</div>
     </div>
 
     <div id="worker-tab" class="content active">
-        <h3>1. กรอกสเตตัสของคุณ</h3>
+        <h3>1. Enter Your Stats</h3>
         <div class="form-grid">
             <div class="input-group">
                 <label>Manual Labor (MAN)</label>
@@ -189,7 +189,7 @@
                 <input type="number" id="w-end" value="0" min="0">
             </div>
             <div class="input-group">
-                <label>Merits พนักงาน (+3% ต่อขั้น)</label>
+                <label>Employee Merits (+3% per upgrade)</label>
                 <select id="w-merit">
                     <option value="0">0/10 (0%)</option>
                     <option value="1">1/10 (+3%)</option>
@@ -208,134 +208,121 @@
 
         <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
 
-        <h3>2. เลือกงานที่ต้องการ (สูงสุด 3 ตำแหน่ง)</h3>
+        <h3>2. Select Desired Jobs (Max 3 positions)</h3>
         <div class="form-grid">
             <div class="input-group">
-                <label>บริษัท (Company)</label>
+                <label>Company</label>
                 <select id="w-company" onchange="populateWorkerPositions()"></select>
             </div>
             <div class="input-group">
-                <label>ตำแหน่ง (Position)</label>
+                <label>Position</label>
                 <select id="w-position"></select>
             </div>
             <div class="input-group" style="display: flex; align-items: flex-end;">
-                <button class="add-btn" onclick="addJobToBasket()">+ เพิ่มลงรายการ</button>
+                <button class="add-btn" onclick="addJobToBasket()">+ Add to Basket</button>
             </div>
         </div>
 
         <div class="basket" id="basket-container" style="display:none;">
-            <strong>รายการที่เลือก:</strong>
+            <strong>Selected Items:</strong>
             <div id="basket-list"></div>
         </div>
 
-        <button onclick="generateWorkerHTML()" style="margin-top: 20px;">สร้างโค้ด HTML สำหรับตั้งกระทู้</button>
+        <button onclick="generateWorkerHTML()" style="margin-top: 20px;">Generate HTML Code for Forum Post</button>
 
         <div class="html-box">
-            <textarea id="w-html" readonly placeholder="โค้ด HTML จะแสดงที่นี่..."></textarea>
+            <textarea id="w-html" readonly placeholder="HTML Code will appear here..."></textarea>
             <button onclick="copyToClipboard('w-html')" style="background: #4caf50;">Copy HTML Code</button>
         </div>
     </div>
 
     <div id="hiring-tab" class="content">
-        <h3>คำนวณสเตตัสที่ผู้สมัครต้องมี</h3>
+        <h3>Calculate Required Stats for Applicants</h3>
         <div class="form-grid">
             <div class="input-group">
-                <label>บริษัท (Company)</label>
+                <label>Company</label>
                 <select id="h-company" onchange="populateHiringPositions()"></select>
             </div>
             <div class="input-group">
-                <label>ตำแหน่งที่รับ (Position)</label>
+                <label>Position</label>
                 <select id="h-position" onchange="calculateHiringTarget()"></select>
             </div>
             <div class="input-group">
-                <label>Eff ที่ต้องการ (Target Eff)</label>
+                <label>Target Eff</label>
                 <input type="number" id="h-eff" value="110" oninput="calculateHiringTarget()">
             </div>
         </div>
 
         <div class="hiring-result" id="hiring-calc-result">
-            ระบบจะคำนวณสเตตัสแบบ Balanced ให้ที่นี่
+            The system will calculate balanced stats here
         </div>
 
         <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
-        
+
         <div class="form-grid">
             <div class="input-group">
-                <label>ค่าตอบแทน / ข้อเสนอ (Perks/Pay)</label>
-                <textarea id="h-perks" placeholder="เช่น 1m/day, rotating trains..." rows="3"></textarea>
+                <label>Perks / Pay</label>
+                <textarea id="h-perks" placeholder="e.g. 1m/day, rotating trains..." rows="3"></textarea>
             </div>
         </div>
 
-        <button onclick="generateHiringHTML()">สร้างโค้ด HTML สำหรับประกาศรับสมัคร</button>
+        <button onclick="generateHiringHTML()">Generate HTML Code for Hiring Post</button>
 
         <div class="html-box">
-            <textarea id="h-html" readonly placeholder="โค้ด HTML จะแสดงที่นี่..."></textarea>
+            <textarea id="h-html" readonly placeholder="HTML Code will appear here..."></textarea>
             <button onclick="copyToClipboard('h-html')" style="background: #4caf50;">Copy HTML Code</button>
         </div>
     </div>
 </div>
 
+<script src="company_positions.js"></script>
 <script>
-    // ฐานข้อมูลครอบคลุมบริษัทส่วนใหญ่ใน Torn
-    const jobsDB = [
-        { c: "Adult Novelties", p: "Cashier", reqP: 2000, typeP: "int", reqS: 1000, typeS: "man" },
-        { c: "Adult Novelties", p: "Sales Assistant", reqP: 1000, typeP: "int", reqS: 500, typeS: "man" },
-        { c: "Amusement Park", p: "Attendant", reqP: 1000, typeP: "end", reqS: 500, typeS: "man" },
-        { c: "Auto Showroom", p: "Salesman", reqP: 2000, typeP: "int", reqS: 1000, typeS: "end" },
-        { c: "Bakery", p: "Baker", reqP: 1000, typeP: "man", reqS: 500, typeS: "end" },
-        { c: "Candle Shop", p: "Candle Maker", reqP: 1000, typeP: "man", reqS: 500, typeS: "end" },
-        { c: "Car Dealership", p: "Salesman", reqP: 2000, typeP: "int", reqS: 1000, typeS: "end" },
-        { c: "Casino", p: "Dealer", reqP: 2000, typeP: "int", reqS: 1000, typeS: "man" },
-        { c: "Clothing Store", p: "Sales Assistant", reqP: 1000, typeP: "int", reqS: 500, typeS: "man" },
-        { c: "Cruise Line", p: "Crewman", reqP: 5000, typeP: "end", reqS: 2500, typeS: "man" },
-        { c: "Cyber Cafe", p: "Attendant", reqP: 1000, typeP: "int", reqS: 500, typeS: "man" },
-        { c: "Detective Agency", p: "Investigator", reqP: 5000, typeP: "int", reqS: 2500, typeS: "end" },
-        { c: "Farm", p: "Farmhand", reqP: 2000, typeP: "man", reqS: 1000, typeS: "end" },
-        { c: "Firework Stand", p: "Sales", reqP: 500, typeP: "int", reqS: 250, typeS: "man" },
-        { c: "Fitness Center", p: "Trainer", reqP: 5000, typeP: "end", reqS: 2500, typeS: "man" },
-        { c: "Flower Shop", p: "Florist", reqP: 1000, typeP: "end", reqS: 500, typeS: "man" },
-        { c: "Flower Shop", p: "Arranger", reqP: 1000, typeP: "int", reqS: 500, typeS: "man" },
-        { c: "Flower Shop", p: "Gardener", reqP: 500, typeP: "end", reqS: 250, typeS: "man" },
-        { c: "Furniture Store", p: "Sales", reqP: 2000, typeP: "int", reqS: 1000, typeS: "man" },
-        { c: "Game Shop", p: "Sales", reqP: 1000, typeP: "int", reqS: 500, typeS: "man" },
-        { c: "Gas Station", p: "Attendant", reqP: 500, typeP: "man", reqS: 250, typeS: "end" },
-        { c: "Gents Strip Club", p: "Bouncer", reqP: 2000, typeP: "end", reqS: 1000, typeS: "man" },
-        { c: "Grocery Store", p: "Manager", reqP: 2000, typeP: "end", reqS: 1000, typeS: "int" },
-        { c: "Grocery Store", p: "Bagger", reqP: 500, typeP: "man", reqS: 250, typeS: "end" },
-        { c: "Gun Shop", p: "Sales", reqP: 2000, typeP: "int", reqS: 1000, typeS: "man" },
-        { c: "Hair Salon", p: "Hairdresser", reqP: 1000, typeP: "man", reqS: 500, typeS: "int" },
-        { c: "Ladies Strip Club", p: "Bouncer", reqP: 2000, typeP: "end", reqS: 1000, typeS: "man" },
-        { c: "Law Firm", p: "Lawyer", reqP: 5000, typeP: "int", reqS: 2500, typeS: "end" },
-        { c: "Lingerie Store", p: "Sales", reqP: 1000, typeP: "int", reqS: 500, typeS: "man" },
-        { c: "Logistics", p: "Driver", reqP: 2000, typeP: "man", reqS: 1000, typeS: "end" },
-        { c: "Logistics", p: "Packer", reqP: 1000, typeP: "man", reqS: 500, typeS: "end" },
-        { c: "Meat Warehouse", p: "Manager", reqP: 5000, typeP: "end", reqS: 2500, typeS: "int" },
-        { c: "Meat Warehouse", p: "Butcher", reqP: 2000, typeP: "man", reqS: 1000, typeS: "end" },
-        { c: "Mechanic Shop", p: "Mechanic", reqP: 2000, typeP: "man", reqS: 1000, typeS: "end" },
-        { c: "Mining Corporation", p: "Miner", reqP: 5000, typeP: "man", reqS: 2500, typeS: "end" },
-        { c: "Nightclub", p: "Bouncer", reqP: 2000, typeP: "end", reqS: 1000, typeS: "man" },
-        { c: "Oil Rig", p: "Roughneck", reqP: 5000, typeP: "man", reqS: 2500, typeS: "end" },
-        { c: "Property Broker", p: "Broker", reqP: 5000, typeP: "int", reqS: 2500, typeS: "man" },
-        { c: "Pub", p: "Bartender", reqP: 1000, typeP: "man", reqS: 500, typeS: "end" },
-        { c: "Restaurant", p: "Waiter", reqP: 1000, typeP: "man", reqS: 500, typeS: "end" },
-        { c: "Software Corporation", p: "Programmer", reqP: 5000, typeP: "int", reqS: 2500, typeS: "end" },
-        { c: "Sweet Shop", p: "Cashier", reqP: 1000, typeP: "int", reqS: 500, typeS: "man" },
-        { c: "Sweet Shop", p: "Packager", reqP: 1000, typeP: "man", reqS: 500, typeS: "end" },
-        { c: "Tattoo Parlor", p: "Artist", reqP: 1000, typeP: "man", reqS: 500, typeS: "int" },
-        { c: "Theater", p: "Actor", reqP: 2000, typeP: "int", reqS: 1000, typeS: "end" },
-        { c: "TV Network", p: "Presenter", reqP: 10000, typeP: "int", reqS: 5000, typeS: "end" },
-        { c: "Zoo", p: "Keeper", reqP: 2000, typeP: "man", reqS: 1000, typeS: "end" }
-    ];
+    // Database covers most companies in Torn
+    let jobsDB = [];
+
+    function generateJobsDB() {
+        jobsDB = [];
+        for (const company in window.TORN_COMPANY_POSITIONS) {
+            const positions = window.TORN_COMPANY_POSITIONS[company];
+            positions.forEach(pos => {
+                const stats = pos.recommended_stats;
+                const statEntries = Object.entries(stats).sort((a, b) => b[1] - a[1]);
+
+                let pType = statEntries[0][0].toLowerCase();
+                let pReq = statEntries[0][1];
+                let sType = statEntries[1][0].toLowerCase();
+                let sReq = statEntries[1][1];
+
+                if (pReq === 0) {
+                    pReq = 1; // Prevent division by zero if all stats are 0, though unlikely
+                }
+                if (sReq === 0) {
+                    // if secondary is 0, just use something else to avoid errors, or keep 0 and handle it
+                    sReq = 0;
+                }
+
+                jobsDB.push({
+                    c: company,
+                    p: pos.rank,
+                    reqP: pReq,
+                    typeP: pType,
+                    reqS: sReq,
+                    typeS: sType
+                });
+            });
+        }
+    }
 
     let workerBasket = [];
 
-    // ดึงรายชื่อบริษัทที่ไม่ซ้ำกันเพื่อสร้าง Dropdown
+    // Get unique company names to populate dropdown
     function initDropdowns() {
+        generateJobsDB();
         const companies = [...new Set(jobsDB.map(job => job.c))].sort();
-        
+
         const wCompany = document.getElementById('w-company');
         const hCompany = document.getElementById('h-company');
-        
+
         companies.forEach(comp => {
             wCompany.add(new Option(comp, comp));
             hCompany.add(new Option(comp, comp));
@@ -349,7 +336,7 @@
         const comp = document.getElementById('w-company').value;
         const wPos = document.getElementById('w-position');
         wPos.innerHTML = '';
-        
+
         const positions = jobsDB.filter(job => job.c === comp);
         positions.forEach(job => {
             wPos.add(new Option(`${job.p} (${job.reqP} ${job.typeP.toUpperCase()} / ${job.reqS} ${job.typeS.toUpperCase()})`, job.p));
@@ -360,7 +347,7 @@
         const comp = document.getElementById('h-company').value;
         const hPos = document.getElementById('h-position');
         hPos.innerHTML = '';
-        
+
         const positions = jobsDB.filter(job => job.c === comp);
         positions.forEach(job => {
             hPos.add(new Option(`${job.p}`, job.p));
@@ -368,14 +355,18 @@
         calculateHiringTarget();
     }
 
-    function switchTab(tabId) {
+    function switchTab(tabId, evt) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-        event.target.classList.add('active');
+        if (evt) {
+            evt.currentTarget.classList.add('active');
+        } else if (typeof event !== 'undefined' && event) {
+            event.target.classList.add('active');
+        }
         document.getElementById(tabId + '-tab').classList.add('active');
     }
 
-    // ฟังก์ชันคำนวณ Eff ตามสูตรเกม
+    // Function to calculate Eff based on game formula
     function getPartEff(stat, req) {
         if (req <= 0 || stat <= 0) return 0;
         const baseEff = Math.min(45, (45 / req) * stat);
@@ -385,7 +376,7 @@
 
     function addJobToBasket() {
         if(workerBasket.length >= 3) {
-            alert("คุณเลือกงานได้สูงสุด 3 ตำแหน่งเท่านั้นครับ");
+            alert("You can only select a maximum of 3 positions.");
             return;
         }
 
@@ -393,7 +384,7 @@
         const posName = document.getElementById('w-position').value;
         const jobData = jobsDB.find(j => j.c === comp && j.p === posName);
 
-        // ดึง Stat ปัจจุบัน
+        // Get current stats
         const man = parseFloat(document.getElementById('w-man').value) || 0;
         const int = parseFloat(document.getElementById('w-int').value) || 0;
         const end = parseFloat(document.getElementById('w-end').value) || 0;
@@ -401,7 +392,7 @@
         const multiplier = 1 + (meritLevel * 0.03);
 
         const myStats = { man: man * multiplier, int: int * multiplier, end: end * multiplier };
-        
+
         const pStat = myStats[jobData.typeP];
         const sStat = myStats[jobData.typeS];
         const totalEff = getPartEff(pStat, jobData.reqP) + getPartEff(sStat, jobData.reqS);
@@ -430,7 +421,7 @@
             list.innerHTML += `
                 <div class="basket-item">
                     <span>${item.company} - <b>${item.position}</b> (Eff: <span style="color:var(--primary); font-weight:bold;">${item.eff}</span>)</span>
-                    <button class="remove-btn" onclick="removeJob(${index})">ลบ</button>
+                    <button class="remove-btn" onclick="removeJob(${index})">Remove</button>
                 </div>
             `;
         });
@@ -460,44 +451,44 @@ INT: ${Number(int).toLocaleString()}<br>
 END: ${Number(end).toLocaleString()}<br><br>
 <b>⭐ Merits:</b> ${merit}/10 Employee Stats
 ${jobListHTML}
-<b>💬 Notes:</b><br> 
+<b>💬 Notes:</b><br>
 Active daily, looking for a stable company. PM me!`;
 
         document.getElementById('w-html').value = htmlCode;
     }
 
-    // ระบบคำนวณย้อนกลับหา Stat แบบ Balanced
+    // Reverse calculation system to find balanced stats
     function calculateHiringTarget() {
         const comp = document.getElementById('h-company').value;
         const posName = document.getElementById('h-position').value;
         const targetEff = parseFloat(document.getElementById('h-eff').value) || 0;
-        
+
         const job = jobsDB.find(j => j.c === comp && j.p === posName);
         if(!job) return;
 
         let reqP_stat = 0, reqS_stat = 0;
 
         if (targetEff > 90) {
-            // กรณีเกิน 90 จะต้องใช้ระบบ Logarithm หาโบนัส
+            // For Eff > 90, use Logarithm system to find bonus
             let bonus = targetEff - 90;
             let bonusPerSide = bonus / 2;
             let multiplier = Math.pow(2, bonusPerSide / 5);
             reqP_stat = Math.ceil(job.reqP * multiplier);
             reqS_stat = Math.ceil(job.reqS * multiplier);
         } else {
-            // กรณีน้อยกว่าหรือเท่ากับ 90 คำนวณจาก Base efficiency (ตันที่ฝั่งละ 45)
+            // For Eff <= 90, calculate from base efficiency (max 45 per side)
             let effPerSide = targetEff / 2;
             reqP_stat = Math.ceil((effPerSide / 45) * job.reqP);
             reqS_stat = Math.ceil((effPerSide / 45) * job.reqS);
         }
 
         document.getElementById('hiring-calc-result').innerHTML = `
-            เพื่อให้ได้ <b>${targetEff} Eff</b> ในตำแหน่งนี้<br>
-            ผู้สมัครควรมีสเตตัส (Balanced) อย่างน้อย:
+            To achieve <b>${targetEff} Eff</b> in this position<br>
+            Applicants should have (Balanced) stats of at least:
             <strong>${reqP_stat.toLocaleString()} ${job.typeP.toUpperCase()} / ${reqS_stat.toLocaleString()} ${job.typeS.toUpperCase()}</strong>
         `;
 
-        // บันทึกค่าไว้ใช้ตอน Gen โค้ด
+        // Save values for generating code
         document.getElementById('hiring-calc-result').dataset.pType = job.typeP.toUpperCase();
         document.getElementById('hiring-calc-result').dataset.sType = job.typeS.toUpperCase();
         document.getElementById('hiring-calc-result').dataset.pStat = reqP_stat.toLocaleString();
@@ -509,7 +500,7 @@ Active daily, looking for a stable company. PM me!`;
         const pos = document.getElementById('h-position').value;
         const eff = document.getElementById('h-eff').value;
         const perks = document.getElementById('h-perks').value || "Good Pay / Daily Trains";
-        
+
         const resultDiv = document.getElementById('hiring-calc-result');
         const pType = resultDiv.dataset.pType;
         const sType = resultDiv.dataset.sType;
@@ -538,7 +529,7 @@ If you meet the requirements, please PM me or apply directly!`;
         alert("Copied to clipboard!");
     }
 
-    // โหลด Dropdown เมื่อเริ่มเปิดหน้าเว็บ
+    // Load dropdowns on page load
     window.onload = initDropdowns;
 </script>
 
