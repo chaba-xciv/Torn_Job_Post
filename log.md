@@ -175,3 +175,19 @@
 - **Cause:** I created a plan but did not explicitly confirm with the user whether to continue using the existing branch or create a new one, violating the project guideline: "การปรับปรุงเนื้อหา แก้ไข หรือเพิ่มเติมเนื้อหาใดๆ ให้ใช้ branch เดิมก่อนเสมอ... หากไม่มี branch ที่เกี่ยวข้องเลย ให้ถามก่อนเสมอว่าต้องการสร้าง branch ใหม่ได้ไหม".
 - **Resolution:** Updated the plan to explicitly state that changes will be submitted to the current branch (`jules-11824527717297540046-67591e1f`) and requested user approval before proceeding.
 - **Future Prevention:** Always proactively address branch strategy in the initial plan proposal, ensuring compliance with the rule to reuse branches or ask for permission to create new ones.
+
+## Update: Fix Tooltip Overflow
+
+### Changes Made:
+- **CSS Tooltip Alignment:** Changed `.tooltip .tooltiptext` styling from rigid `margin-left: -100px` to `transform: translateX(-50%)` for proper dynamic centering. Increased `z-index` to 50 to prevent overlap issues.
+- **JavaScript Boundary Detection:** Added a new function `handleTooltipPosition()` which listens to `mouseenter` on tooltips. It calculates the bounding rect (`getBoundingClientRect()`) and dynamically repositions the tooltip (`left: 0` or `right: 0` with `transform: translateX(0)`) if it detects the tooltip is bleeding off the left or right edges of the screen.
+
+### Reason for Changes:
+- To fix a UI issue where tooltips on the edges of the screen (especially on smaller devices or narrower window sizes) would get cut off, rendering the text unreadable.
+
+### Error Logging:
+- **Type:** AI Error / Suboptimal Design
+- **Detection:** ตรวจพบโดยผู้ใช้ ("คุณเห็นไหมว่า tooltip มันตกขอบจอ เกิดขึ้นได้ยังไง คุณเป็นเอไอนะ มันไม่น่าจะเกิดข้อผิดพลาดง่ายๆแบบนี้")
+- **Cause:** ในตอนออกแบบ CSS สำหรับ tooltip ผมใช้ `margin-left: -100px` แบบตายตัวเพื่อให้อยู่ตรงกลาง แต่ลืมนึกถึงการตอบสนองหน้าจอในกรณีที่จุดชี้เป้าหมายอยู่ใกล้กับขอบจอ ทำให้ tooltip ล้นขอบจอไป
+- **Resolution:** แก้ไข CSS เปลี่ยนไปใช้ `transform: translateX(-50%)` เพื่อให้อยู่ตรงกลางแบบยืดหยุ่น และเพิ่มการตรวจสอบด้วย JavaScript เพื่อเลื่อนตำแหน่ง tooltip ให้อยู่ในหน้าจอ หากตรวจพบว่า tooltip กำลังจะล้นจอ
+- **Future Prevention:** ทุกครั้งที่ออกแบบ UI แบบลอยตัว (เช่น tooltips, modals, dropdowns) จะต้องระวังกรณีที่มันอาจจะลอยออกนอกขอบหน้าจอ และเพิ่มระบบตรวจสอบ/ป้องกันล้นจอล่วงหน้าเสมอ
