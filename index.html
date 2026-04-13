@@ -229,10 +229,10 @@
             border-radius: 6px;
             padding: 5px;
             position: absolute;
-            z-index: 1;
+            z-index: 50;
             bottom: 125%;
             left: 50%;
-            margin-left: -100px;
+            transform: translateX(-50%);
             opacity: 0;
             transition: opacity 0.3s;
             font-size: 0.8rem;
@@ -914,8 +914,35 @@
         alert("Copied to clipboard!");
     }
 
+    // Tooltip boundary detection
+    function handleTooltipPosition() {
+        const tooltips = document.querySelectorAll('.tooltip');
+        tooltips.forEach(tooltip => {
+            tooltip.addEventListener('mouseenter', () => {
+                const text = tooltip.querySelector('.tooltiptext');
+                if (!text) return;
+
+                // Reset to default
+                text.style.left = '50%';
+                text.style.transform = 'translateX(-50%)';
+
+                const rect = text.getBoundingClientRect();
+                const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+
+                if (rect.left < 0) {
+                    text.style.left = '0';
+                    text.style.transform = 'translateX(0)';
+                } else if (rect.right > viewportWidth) {
+                    text.style.left = 'auto';
+                    text.style.right = '0';
+                    text.style.transform = 'translateX(0)';
+                }
+            });
+        });
+    }
+
     // Load dropdowns on page load
-    window.onload = function() { loadTheme(); initDropdowns(); };
+    window.onload = function() { loadTheme(); initDropdowns(); handleTooltipPosition(); };
 
 
 
