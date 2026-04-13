@@ -50,3 +50,21 @@
 - **Cause:** Temporary python helper scripts (`update_index.py`, etc.) used to apply the complex multiline string replacements were left in the repository directory after execution.
 - **Resolution:** Deleted the temporary python files using `rm`.
 - **Future Prevention:** Remember to clean up temporary sandbox files or create them outside the repository root (e.g., in `/tmp` or the home directory).
+
+## Update: Fix Merit Calculation and HTML Generation
+
+### Changes Made:
+- **Merit Values**: Updated the merit dropdown to correctly represent 1% per upgrade (up to 10%), fixing the previous incorrect assumption of 3%.
+- **Stat Calculation**: Removed the merit multiplier from the base `calculateMyStats()` function, ensuring efficiency is calculated strictly using raw stats.
+- **Worker HTML Generator**: Modified `generateWorkerHTML()` to format the text output exactly as requested: `with X% eff job stats + Y% merit Y/10`.
+- **Hiring HTML Generator**: Removed the hardcoded fallback text "Good Pay / Daily Trains" from `generateHiringHTML()`. The "What we offer" section is now conditionally generated only if the user types something into the text area.
+
+### Reason for Changes:
+- To adhere to actual game mechanics (1 merit = 1% stat boost, applied as a flat percentage on top of base efficiency, rather than modifying raw stats before calculation).
+- To make the generated forum posts cleaner and more accurate to the user's intent.
+
+### Error Logging:
+- **Type:** Human Error / Incomplete Specification
+- **Detection:** User feedback.
+- **Cause:** The initial instructions did not specify that merits provide exactly a 1% boost and are calculated differently than base stats, nor did it specify the exact wording required for the HTML output.
+- **Resolution:** Adjusted the math and the string generation templates based on the user's clarifying feedback.
