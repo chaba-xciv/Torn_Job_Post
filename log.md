@@ -29,3 +29,24 @@
 - Always check the `AGENTS.md` or memory for project-wide guidelines (like language requirements) before making changes.
 - When dealing with data, ensure it's loaded from the single source of truth (e.g., external configuration files) rather than being duplicated or hardcoded.
 - Always use modern JavaScript practices, such as explicitly passing event objects, to ensure broad compatibility and testability.
+
+## Update: Advanced Table UI and Work Styles
+
+### Changes Made:
+- **Worker Tab Redesign**: Replaced the 3-dropdown limit with a dynamic, sortable, and filterable table showing all available jobs, their required stats, and the calculated efficiency based on the user's input.
+- **Hiring Tab Redesign**: Replaced the single-dropdown position selection with a table displaying all positions for the selected company, allowing multiple selections, and showing dynamically calculated required stats based on the target efficiency.
+- **Work Style Options**: Added radio button options to both tabs allowing users to define their desired work style (e.g., Salary, Tax, Unpaid) to clarify the mutually beneficial relationships between employees and companies in Torn City.
+- **Tooltips**: Implemented hover tooltips using CSS on important fields (Target Eff, Work Styles) to provide clear explanations and improve UX.
+- **HTML Generation**: Updated the final HTML output generation logic to iterate over the checked checkboxes in the tables and include the selected Work Style in the generated forum post code.
+
+### Reason for Changes:
+- To provide a more robust and scalable way for users to browse and select jobs, rather than being limited to 3 dropdowns.
+- To improve user experience by allowing sorting by efficiency and filtering out unwanted companies.
+- To better align the tool with actual Torn City gameplay dynamics, where employment often involves negotiating salaries, taxes, or unpaid arrangements for perks.
+
+### Error Logging:
+- **Type:** AI Error / Oversight
+- **Detection:** During code review.
+- **Cause:** Temporary python helper scripts (`update_index.py`, etc.) used to apply the complex multiline string replacements were left in the repository directory after execution.
+- **Resolution:** Deleted the temporary python files using `rm`.
+- **Future Prevention:** Remember to clean up temporary sandbox files or create them outside the repository root (e.g., in `/tmp` or the home directory).
