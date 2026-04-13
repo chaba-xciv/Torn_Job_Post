@@ -4,6 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Torn City - Forum Post Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            corePlugins: { preflight: false },
+            theme: {
+                extend: {
+                    colors: {
+                        'theme-card': 'var(--card-bg)',
+                        'theme-border': 'var(--border)',
+                        'theme-text-muted': 'var(--text-muted)'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --bg-color: #f0f2f5;
@@ -40,72 +56,6 @@
                 --border: #3e4042;
                 --highlight: #3a3b3c;
             }
-        }
-
-        /* Floating Controls Container */
-        .floating-controls {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            background: transparent;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 10px;
-        }
-
-        .control-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .theme-toggle {
-            background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for better visibility */
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            color: white;
-            width: auto;
-            padding: 8px 12px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border-radius: 4px;
-            margin: 0;
-            backdrop-filter: blur(5px); /* Add a slight blur to the background */
-            transition: background 0.3s, border-color 0.3s;
-        }
-
-        /* Specific styling for light theme to ensure visibility */
-        body.light-theme .theme-toggle,
-        body:not(.dark-theme) .theme-toggle {
-           background: rgba(255, 255, 255, 0.7);
-           border: 1px solid rgba(0, 0, 0, 0.2);
-           color: #333;
-           box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        body.light-theme .theme-toggle:hover,
-        body:not(.dark-theme) .theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.9);
-        }
-
-        .theme-toggle:hover {
-            background: rgba(0, 0, 0, 0.7);
-        }
-
-        .footer-credits {
-            font-size: 0.75rem;
-            text-align: right;
-            color: var(--text-muted);
-            background: rgba(var(--card-bg-rgb, 255,255,255), 0.7); /* Fallback */
-            padding: 5px 10px;
-            border-radius: 4px;
-            backdrop-filter: blur(5px);
-            border: 1px solid var(--border);
-        }
-
-        /* Setup rgb variables for background transparency if needed later,
-           but backdrop-filter works well for floating elements */
-        body.dark-theme .footer-credits {
-            background: rgba(36, 37, 38, 0.7);
         }
 
         .header-top {
@@ -162,7 +112,6 @@
             .form-grid { grid-template-columns: 1fr; }
             .table-container { max-height: 300px; }
             .data-table th, .data-table td { padding: 5px; font-size: 0.85rem; }
-            .floating-controls { top: 5px; right: 5px; }
         }
 
         .header {
@@ -376,14 +325,22 @@
 
 <div class="container">
     <!-- Floating Controls (Fixed top right) -->
-    <div class="floating-controls">
-        <div class="control-buttons">
-            <button class="theme-toggle" onclick="clearData()" style="border-color: #ff5252; color: #ff5252;" title="Clear all saved data">🗑️ Clear</button>
-            <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
+    <div class="fixed top-4 right-4 z-50 flex flex-col items-end gap-2">
+        <div class="flex gap-2 bg-theme-card/80 backdrop-blur-sm p-1.5 rounded-full shadow-sm border border-theme-border">
+            <button onclick="clearData()" class="w-8 h-8 rounded-full flex items-center justify-center text-red-500 hover:text-red-600 transition-colors" title="Clear all saved data">
+                <i class="fa-solid fa-trash text-sm"></i>
+            </button>
+            <div class="w-px h-6 bg-theme-border self-center mx-1"></div>
+            <button onclick="setTheme('light')" id="themeBtn-light" class="w-8 h-8 rounded-full flex items-center justify-center text-theme-text-muted hover:text-yellow-500 transition-colors" title="Light Theme">
+                <i class="fa-solid fa-sun text-sm"></i>
+            </button>
+            <button onclick="setTheme('dark')" id="themeBtn-dark" class="w-8 h-8 rounded-full flex items-center justify-center text-theme-text-muted hover:text-indigo-400 transition-colors" title="Dark Theme">
+                <i class="fa-solid fa-moon text-sm"></i>
+            </button>
         </div>
-        <div class="footer-credits">
-            Dev by <a href="https://jules.google/" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: bold;">Jules AI</a> |
-            <a href="https://github.com/chaba-xciv/Torn_Job_Post" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: bold;">GitHub</a>
+        <div class="text-xs text-theme-text-muted bg-theme-card/70 backdrop-blur-sm px-2.5 py-1 rounded-md border border-theme-border shadow-sm">
+            Dev by <span class="font-bold" style="color: var(--primary);">Jules AI</span> |
+            <a href="https://github.com/chaba-xciv/Torn_Job_Post" target="_blank" class="font-bold" style="color: var(--primary); text-decoration: none;">GitHub</a>
         </div>
     </div>
 
@@ -1035,36 +992,55 @@
         }
     }
 
-    // Theme Toggle Functionality
-    function toggleTheme() {
+    // Theme Functionality
+    function setTheme(theme) {
         const body = document.body;
-        if (body.classList.contains('dark-theme')) {
-            body.classList.remove('dark-theme');
-            body.classList.add('light-theme');
-            localStorage.setItem('theme', 'light');
-        } else if (body.classList.contains('light-theme')) {
+        if (theme === 'dark') {
             body.classList.remove('light-theme');
             body.classList.add('dark-theme');
             localStorage.setItem('theme', 'dark');
+            updateThemeButtons('dark');
         } else {
-            // No class means it's using OS preference
-            const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (isDark) {
-                body.classList.add('light-theme');
-                localStorage.setItem('theme', 'light');
+            body.classList.remove('dark-theme');
+            body.classList.add('light-theme');
+            localStorage.setItem('theme', 'light');
+            updateThemeButtons('light');
+        }
+    }
+
+    function updateThemeButtons(activeTheme) {
+        const lightBtn = document.getElementById('themeBtn-light');
+        const darkBtn = document.getElementById('themeBtn-dark');
+
+        if (lightBtn && darkBtn) {
+            if (activeTheme === 'light') {
+                lightBtn.classList.add('text-yellow-500');
+                lightBtn.classList.remove('text-theme-text-muted');
+                darkBtn.classList.remove('text-indigo-400');
+                darkBtn.classList.add('text-theme-text-muted');
             } else {
-                body.classList.add('dark-theme');
-                localStorage.setItem('theme', 'dark');
+                darkBtn.classList.add('text-indigo-400');
+                darkBtn.classList.remove('text-theme-text-muted');
+                lightBtn.classList.remove('text-yellow-500');
+                lightBtn.classList.add('text-theme-text-muted');
             }
         }
     }
 
     function loadTheme() {
-        const savedTheme = localStorage.getItem('theme');
+        let savedTheme = localStorage.getItem('theme');
+        if (!savedTheme) {
+            // Fallback to OS preference
+            const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            savedTheme = isDark ? 'dark' : 'light';
+        }
+
         if (savedTheme === 'dark') {
             document.body.classList.add('dark-theme');
-        } else if (savedTheme === 'light') {
+            updateThemeButtons('dark');
+        } else {
             document.body.classList.add('light-theme');
+            updateThemeButtons('light');
         }
     }
 
