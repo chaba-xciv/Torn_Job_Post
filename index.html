@@ -325,6 +325,13 @@
             </label>
         </div>
 
+        <div class="form-grid" style="margin-top: 15px;">
+            <div class="input-group">
+                <label>Additional Notes</label>
+                <textarea id="w-notes" placeholder="Enter any extra notes for the employers..." rows="3"></textarea>
+            </div>
+        </div>
+
         <button onclick="generateWorkerHTML()" style="margin-top: 20px;">Generate HTML Code for Forum Post</button>
 
         <div class="html-box">
@@ -382,12 +389,19 @@
 
         <div class="form-grid" style="margin-top: 15px;">
             <div class="input-group">
+                <label>Company Link</label>
+                <input type="text" id="h-link" placeholder="e.g. https://www.torn.com/joblist.php?step=corpinfo&ID=12345">
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="input-group">
                 <label>Perks / Pay Details</label>
                 <textarea id="h-perks" placeholder="e.g. 1m/day, rotating trains..." rows="3"></textarea>
             </div>
         </div>
 
-        <button onclick="generateHiringHTML()">Generate HTML Code for Hiring Post</button>
+        <button onclick="generateHiringHTML()" style="margin-top: 10px;">Generate HTML Code for Hiring Post</button>
 
         <div class="html-box">
             <textarea id="h-html" readonly placeholder="HTML Code will appear here..."></textarea>
@@ -631,6 +645,9 @@
             jobListHTML = "<br><br><i>(Open to any positions matching my stats)</i><br><br>";
         }
 
+        const notes = document.getElementById('w-notes').value;
+        const formattedNotes = notes.replace(/\n/g, "<br>");
+
         const htmlCode = `<b>Looking for a Job</b><br><br>
 <b>📊 My Base Stats:</b><br>
 MAN: ${Number(man).toLocaleString()}<br>
@@ -639,8 +656,7 @@ END: ${Number(end).toLocaleString()}<br><br>
 <b>⭐ Merits:</b> ${merit}/10 Employee Stats<br>
 <b>💼 Work Style:</b> ${workStyleText}
 ${jobListHTML}
-<b>💬 Notes:</b><br>
-Active daily, looking for a stable company. PM me!`;
+${notes ? `<b>💬 Notes:</b><br>${formattedNotes}` : ''}`;
 
         document.getElementById('w-html').value = htmlCode;
     }
@@ -649,6 +665,7 @@ Active daily, looking for a stable company. PM me!`;
         const comp = document.getElementById('h-company').value;
         const eff = document.getElementById('h-eff').value;
         const perks = document.getElementById('h-perks').value;
+        const link = document.getElementById('h-link').value.trim();
 
         const selectedRadio = document.querySelector('input[name="h-style"]:checked');
         let workStyleText = "Negotiable";
@@ -681,7 +698,8 @@ We are currently looking for dedicated workers to join our team!<br><br>
 <b>📌 Positions Open:</b><br>
 ${positionsHTML}<br>
 ${formattedPerks ? `<b>💰 What we offer / Details:</b><br>${formattedPerks}<br><br>` : ''}
-If you meet the requirements, please PM me or apply directly!`;
+If you meet the requirements, please PM me or apply directly!
+${link ? `<br><br><a href="${link}"><b>[Apply Here]</b></a>` : ''}`;
 
         document.getElementById('h-html').value = htmlCode;
     }

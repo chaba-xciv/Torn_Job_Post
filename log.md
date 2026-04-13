@@ -68,3 +68,19 @@
 - **Detection:** User feedback.
 - **Cause:** The initial instructions did not specify that merits provide exactly a 1% boost and are calculated differently than base stats, nor did it specify the exact wording required for the HTML output.
 - **Resolution:** Adjusted the math and the string generation templates based on the user's clarifying feedback.
+
+## Update: Custom Notes and Application Links
+
+### Changes Made:
+- **Worker Tab Custom Notes**: Replaced the hardcoded 'Active daily, looking for a stable company. PM me!' text with a blank text area so job seekers can provide their own specific notes without relying on repetitive boilerplate.
+- **Hiring Tab Application Link**: Added a 'Company Link' input to the Hiring Tab. If provided, the generator appends a hyperlinked `[Apply Here]` button to the bottom of the forum post, streamlining the recruitment process.
+
+### Reason for Changes:
+- To encourage personalized and authentic forum posts from job seekers.
+- To reduce friction for players applying to companies by providing direct links.
+
+### Error Logging:
+- **Type:** Human Error / Incomplete Specification
+- **Detection:** User feedback.
+- **Cause:** The previous prompt did not specify removing the default boilerplate text for workers, nor did it explicitly mention the need for an application link field for employers.
+- **Resolution:** Added the requested inputs and modified the HTML template generators to consume them correctly.
