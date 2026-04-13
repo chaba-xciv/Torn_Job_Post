@@ -150,3 +150,10 @@
 - **Cause:** The previous iteration used basic, custom CSS for the floating controls which was deemed visually unappealing and not up to the user's standard.
 - **Resolution:** Removed the custom CSS implementation and replaced it entirely with the user-provided, standardized Tailwind HTML structure incorporating glassmorphism and FontAwesome icons, adjusting the Javascript to support the new element IDs.
 - **Future Prevention:** Pay closer attention to modern UI/UX trends (like glassmorphism and icon usage) and proactively use utility frameworks like Tailwind if permitted, to ensure a polished look, rather than relying on basic custom CSS that might look dated or poorly aligned.
+
+### UI/UX Theme Refactor (feature/ui-ux-improvement)
+- **Problem**: The UI was spacious but felt a bit bloated, especially on smaller screens, and user wanted a compact and minimal redesign.
+- **Cause**: Existing paddings (e.g. `10px` body, `20px` content padding), margins, and large border-radiuses (`12px`) consumed extra space.
+- **Resolution**: Refactored the CSS styling to integrate smaller spacing metrics (`5px` body padding, `10px` content padding), smaller rounded corners (`4px` to `8px`), and subtle flat design details using Tailwind utilities where applicable. Enhanced responsiveness.
+- **Error Type**: None (Human suggestion to redesign layout).
+- **Prevention**: Use tighter CSS metrics and heavily lean on utility classes for structured designs in the future.
