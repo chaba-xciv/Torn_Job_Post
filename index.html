@@ -42,25 +42,75 @@
             }
         }
 
-        .theme-toggle {
+        /* Floating Controls Container */
+        .floating-controls {
+            position: fixed;
+            top: 15px;
+            right: 15px;
             background: transparent;
-            border: 1px solid white;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-toggle {
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for better visibility */
+            border: 1px solid rgba(255, 255, 255, 0.5);
             color: white;
             width: auto;
-            padding: 5px 10px;
+            padding: 8px 12px;
             font-size: 0.9rem;
             cursor: pointer;
             border-radius: 4px;
             margin: 0;
+            backdrop-filter: blur(5px); /* Add a slight blur to the background */
+            transition: background 0.3s, border-color 0.3s;
         }
+
+        /* Specific styling for light theme to ensure visibility */
+        body.light-theme .theme-toggle,
+        body:not(.dark-theme) .theme-toggle {
+           background: rgba(255, 255, 255, 0.7);
+           border: 1px solid rgba(0, 0, 0, 0.2);
+           color: #333;
+           box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        body.light-theme .theme-toggle:hover,
+        body:not(.dark-theme) .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
         .theme-toggle:hover {
-            background: rgba(255,255,255,0.2);
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .footer-credits {
+            font-size: 0.75rem;
+            text-align: right;
+            color: var(--text-muted);
+            background: rgba(var(--card-bg-rgb, 255,255,255), 0.7); /* Fallback */
+            padding: 5px 10px;
+            border-radius: 4px;
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--border);
+        }
+
+        /* Setup rgb variables for background transparency if needed later,
+           but backdrop-filter works well for floating elements */
+        body.dark-theme .footer-credits {
+            background: rgba(36, 37, 38, 0.7);
         }
 
         .header-top {
             position: relative;
         }
-
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -76,7 +126,7 @@
 
         .container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1400px;
             background: var(--card-bg);
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -87,7 +137,24 @@
             margin-bottom: 20px;
         }
 
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .col-left, .col-right {
+            display: flex;
+            flex-direction: column;
+        }
+
         /* Responsive grid adjustments */
+        @media (max-width: 992px) {
+            .two-columns {
+                grid-template-columns: 1fr; /* Fallback to 1 column on smaller screens */
+            }
+        }
+
         @media (max-width: 600px) {
             body { padding: 5px; }
             .tabs { flex-direction: column; }
@@ -95,6 +162,7 @@
             .form-grid { grid-template-columns: 1fr; }
             .table-container { max-height: 300px; }
             .data-table th, .data-table td { padding: 5px; font-size: 0.85rem; }
+            .floating-controls { top: 5px; right: 5px; }
         }
 
         .header {
@@ -307,12 +375,20 @@
 <body>
 
 <div class="container">
-    <div class="header header-top">
-        <h1>Torn City - Forum Post Builder</h1>
-        <div style="position: absolute; top: 15px; right: 15px; display: flex; gap: 10px;">
+    <!-- Floating Controls (Fixed top right) -->
+    <div class="floating-controls">
+        <div class="control-buttons">
             <button class="theme-toggle" onclick="clearData()" style="border-color: #ff5252; color: #ff5252;" title="Clear all saved data">🗑️ Clear</button>
             <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
         </div>
+        <div class="footer-credits">
+            Dev by <a href="https://jules.google/" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: bold;">Jules AI</a> |
+            <a href="https://github.com/chaba-xciv/Torn_Job_Post" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: bold;">GitHub</a>
+        </div>
+    </div>
+
+    <div class="header header-top">
+        <h1>Torn City - Forum Post Builder</h1>
     </div>
 
     <div class="tabs">
@@ -321,209 +397,217 @@
     </div>
 
     <div id="worker-tab" class="content active">
-        <h3>1. Enter Your Stats</h3>
-        <div class="form-grid">
-            <div class="input-group">
-                <label>Manual Labor (MAN)</label>
-                <input type="number" id="w-man" value="0" min="0" oninput="renderWorkerTable()">
+        <div class="two-columns">
+            <!-- Left Column: Inputs -->
+            <div class="col-left">
+                <h3>1. Enter Your Stats</h3>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Manual Labor (MAN)</label>
+                        <input type="number" id="w-man" value="0" min="0" oninput="renderWorkerTable()">
+                    </div>
+                    <div class="input-group">
+                        <label>Intelligence (INT)</label>
+                        <input type="number" id="w-int" value="0" min="0" oninput="renderWorkerTable()">
+                    </div>
+                    <div class="input-group">
+                        <label>Endurance (END)</label>
+                        <input type="number" id="w-end" value="0" min="0" oninput="renderWorkerTable()">
+                    </div>
+                    <div class="input-group">
+                        <label>Employee Merits (+1% per upgrade)</label>
+                        <select id="w-merit" onchange="renderWorkerTable()">
+                            <option value="0">0/10 (0%)</option>
+                            <option value="1">1/10 (+1%)</option>
+                            <option value="2">2/10 (+2%)</option>
+                            <option value="3">3/10 (+3%)</option>
+                            <option value="4">4/10 (+4%)</option>
+                            <option value="5">5/10 (+5%)</option>
+                            <option value="6">6/10 (+6%)</option>
+                            <option value="7">7/10 (+7%)</option>
+                            <option value="8">8/10 (+8%)</option>
+                            <option value="9">9/10 (+9%)</option>
+                            <option value="10">10/10 (+10%)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+
+                <h3>2. Work Style</h3>
+                <div class="work-style-options">
+                    <label class="work-style-option tooltip">
+                        <input type="radio" name="w-style" value="salary" checked> Receive Salary
+                        <span class="tooltiptext">You expect to be paid because your high efficiency benefits the company.</span>
+                    </label>
+                    <label class="work-style-option tooltip">
+                        <input type="radio" name="w-style" value="tax"> Pay Tax
+                        <span class="tooltiptext">You will pay the company daily to work there, usually because you have low stats but want the company perks/specials.</span>
+                    </label>
+                    <label class="work-style-option tooltip">
+                        <input type="radio" name="w-style" value="unpaid"> Unpaid (Free)
+                        <span class="tooltiptext">Mutual benefit: you work for free to get company perks, and the company gets your efficiency for free.</span>
+                    </label>
+                </div>
+
+                <div class="form-grid" style="margin-top: 15px;">
+                    <div class="input-group">
+                        <label>Post Color Theme</label>
+                        <select id="w-post-theme" onchange="generateWorkerHTML()">
+                            <option value="#333333">Default (Dark Grey)</option>
+                            <option value="#3b5998">Torn Blue</option>
+                            <option value="#2e7d32">Green</option>
+                            <option value="#c62828">Red</option>
+                            <option value="#6a1b9a">Purple</option>
+                            <option value="#e65100">Orange</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-grid" style="margin-top: 15px;">
+                    <div class="input-group">
+                        <label>Additional Notes</label>
+                        <textarea id="w-notes" placeholder="Enter any extra notes for the employers..." rows="3"></textarea>
+                    </div>
+                </div>
+
+                <button onclick="generateWorkerHTML()" style="margin-top: 20px;">Generate HTML Code for Forum Post</button>
             </div>
-            <div class="input-group">
-                <label>Intelligence (INT)</label>
-                <input type="number" id="w-int" value="0" min="0" oninput="renderWorkerTable()">
-            </div>
-            <div class="input-group">
-                <label>Endurance (END)</label>
-                <input type="number" id="w-end" value="0" min="0" oninput="renderWorkerTable()">
-            </div>
-            <div class="input-group">
-                <label>Employee Merits (+1% per upgrade)</label>
-                <select id="w-merit" onchange="renderWorkerTable()">
-                    <option value="0">0/10 (0%)</option>
-                    <option value="1">1/10 (+1%)</option>
-                    <option value="2">2/10 (+2%)</option>
-                    <option value="3">3/10 (+3%)</option>
-                    <option value="4">4/10 (+4%)</option>
-                    <option value="5">5/10 (+5%)</option>
-                    <option value="6">6/10 (+6%)</option>
-                    <option value="7">7/10 (+7%)</option>
-                    <option value="8">8/10 (+8%)</option>
-                    <option value="9">9/10 (+9%)</option>
-                    <option value="10">10/10 (+10%)</option>
-                </select>
-            </div>
-        </div>
 
-        <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+            <!-- Right Column: Outputs -->
+            <div class="col-right">
+                <h3>3. Filter and Select Jobs</h3>
+                <div class="filters">
+                    <input type="text" id="w-filter-company" placeholder="Filter/Exclude Company (e.g. -Farm)" oninput="renderWorkerTable()">
+                    <input type="text" id="w-filter-position" placeholder="Filter Position" oninput="renderWorkerTable()">
+                </div>
 
-        <h3>2. Filter and Select Jobs</h3>
-        <div class="filters">
-            <input type="text" id="w-filter-company" placeholder="Filter/Exclude Company (e.g. -Farm)" oninput="renderWorkerTable()">
-            <input type="text" id="w-filter-position" placeholder="Filter Position" oninput="renderWorkerTable()">
-        </div>
+                <div class="table-container">
+                    <table class="data-table" id="worker-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px; text-align: center;">Select</th>
+                                <th onclick="sortWorkerTable('c')">Company ↕</th>
+                                <th onclick="sortWorkerTable('p')">Position ↕</th>
+                                <th>Recommended Stats</th>
+                                <th onclick="sortWorkerTable('eff')">Eff ↕</th>
+                            </tr>
+                        </thead>
+                        <tbody id="worker-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
 
-        <div class="table-container">
-            <table class="data-table" id="worker-table">
-                <thead>
-                    <tr>
-                        <th style="width: 40px; text-align: center;">Select</th>
-                        <th onclick="sortWorkerTable('c')">Company ↕</th>
-                        <th onclick="sortWorkerTable('p')">Position ↕</th>
-                        <th>Recommended Stats</th>
-                        <th onclick="sortWorkerTable('eff')">Eff ↕</th>
-                    </tr>
-                </thead>
-                <tbody id="worker-table-body">
-                    <!-- Populated by JS -->
-                </tbody>
-            </table>
-        </div>
+                <div class="html-box">
+                    <textarea id="w-html" readonly placeholder="HTML Code will appear here..."></textarea>
+                    <button onclick="copyToClipboard('w-html')" style="background: #4caf50;">Copy HTML Code</button>
+                </div>
 
-        <h3>3. Work Style</h3>
-        <div class="work-style-options">
-            <label class="work-style-option tooltip">
-                <input type="radio" name="w-style" value="salary" checked> Receive Salary
-                <span class="tooltiptext">You expect to be paid because your high efficiency benefits the company.</span>
-            </label>
-            <label class="work-style-option tooltip">
-                <input type="radio" name="w-style" value="tax"> Pay Tax
-                <span class="tooltiptext">You will pay the company daily to work there, usually because you have low stats but want the company perks/specials.</span>
-            </label>
-            <label class="work-style-option tooltip">
-                <input type="radio" name="w-style" value="unpaid"> Unpaid (Free)
-                <span class="tooltiptext">Mutual benefit: you work for free to get company perks, and the company gets your efficiency for free.</span>
-            </label>
-        </div>
-
-
-        <div class="form-grid" style="margin-top: 15px;">
-            <div class="input-group">
-                <label>Post Color Theme</label>
-                <select id="w-post-theme" onchange="generateWorkerHTML()">
-                    <option value="#333333">Default (Dark Grey)</option>
-                    <option value="#3b5998">Torn Blue</option>
-                    <option value="#2e7d32">Green</option>
-                    <option value="#c62828">Red</option>
-                    <option value="#6a1b9a">Purple</option>
-                    <option value="#e65100">Orange</option>
-                </select>
+                <div class="preview-title" style="margin-top: 20px;">Live Preview</div>
+                <div id="w-preview" class="preview-box">
+                    <i>Preview will appear here...</i>
+                </div>
             </div>
         </div>
-<div class="form-grid" style="margin-top: 15px;">
-            <div class="input-group">
-                <label>Additional Notes</label>
-                <textarea id="w-notes" placeholder="Enter any extra notes for the employers..." rows="3"></textarea>
-            </div>
-        </div>
-
-        <button onclick="generateWorkerHTML()" style="margin-top: 20px;">Generate HTML Code for Forum Post</button>
-
-
-        <div class="html-box">
-            <textarea id="w-html" readonly placeholder="HTML Code will appear here..."></textarea>
-            <button onclick="copyToClipboard('w-html')" style="background: #4caf50;">Copy HTML Code</button>
-        </div>
-
-        <div class="preview-title" style="margin-top: 20px;">Live Preview</div>
-        <div id="w-preview" class="preview-box">
-            <i>Preview will appear here...</i>
-        </div>
-
     </div>
 
     <div id="hiring-tab" class="content">
-        <h3>1. Setup Hiring Requirements</h3>
-        <div class="form-grid">
-            <div class="input-group">
-                <label>Company</label>
-                <select id="h-company" onchange="renderHiringTable()"></select>
+        <div class="two-columns">
+            <!-- Left Column: Inputs -->
+            <div class="col-left">
+                <h3>1. Setup Hiring Requirements</h3>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Company</label>
+                        <select id="h-company" onchange="renderHiringTable()"></select>
+                    </div>
+                    <div class="input-group">
+                        <label class="tooltip">Target Eff
+                            <span class="tooltiptext">The efficiency you want the employee to have.</span>
+                        </label>
+                        <input type="number" id="h-eff" value="110" oninput="renderHiringTable()">
+                    </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+
+                <h3>2. Offer & Work Style</h3>
+                <div class="work-style-options">
+                    <label class="work-style-option tooltip">
+                        <input type="radio" name="h-style" value="paying" checked> Paying Salary
+                        <span class="tooltiptext">You will pay the employee a daily salary for their high efficiency.</span>
+                    </label>
+                    <label class="work-style-option tooltip">
+                        <input type="radio" name="h-style" value="taxing"> Requiring Tax
+                        <span class="tooltiptext">The employee must pay you daily to work here and receive perks.</span>
+                    </label>
+                    <label class="work-style-option tooltip">
+                        <input type="radio" name="h-style" value="unpaid"> Unpaid (Free)
+                        <span class="tooltiptext">Mutual benefit: they work for free, you get their efficiency for free.</span>
+                    </label>
+                </div>
+
+                <div class="form-grid" style="margin-top: 15px;">
+                    <div class="input-group">
+                        <label>Company Link</label>
+                        <input type="text" id="h-link" placeholder="e.g. https://www.torn.com/joblist.php?step=corpinfo&ID=12345">
+                    </div>
+                </div>
+
+                <div class="form-grid" style="margin-top: 15px;">
+                    <div class="input-group">
+                        <label>Post Color Theme</label>
+                        <select id="h-post-theme" onchange="generateHiringHTML()">
+                            <option value="#333333">Default (Dark Grey)</option>
+                            <option value="#3b5998">Torn Blue</option>
+                            <option value="#2e7d32">Green</option>
+                            <option value="#c62828">Red</option>
+                            <option value="#6a1b9a">Purple</option>
+                            <option value="#e65100">Orange</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid" style="margin-top: 15px;">
+                    <div class="input-group">
+                        <label>Perks / Pay Details</label>
+                        <textarea id="h-perks" placeholder="e.g. 1m/day, rotating trains..." rows="3"></textarea>
+                    </div>
+                </div>
+
+                <button onclick="generateHiringHTML()" style="margin-top: 10px;">Generate HTML Code for Hiring Post</button>
             </div>
-            <div class="input-group">
-                <label class="tooltip">Target Eff
-                    <span class="tooltiptext">The efficiency you want the employee to have.</span>
-                </label>
-                <input type="number" id="h-eff" value="110" oninput="renderHiringTable()">
+
+            <!-- Right Column: Outputs -->
+            <div class="col-right">
+                <h3>3. Filter and Select Positions</h3>
+                <div class="table-container">
+                    <table class="data-table" id="hiring-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px; text-align: center;">Select</th>
+                                <th>Position</th>
+                                <th>Base Recommended Stats</th>
+                                <th>Required Stats (Calculated)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hiring-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="html-box">
+                    <textarea id="h-html" readonly placeholder="HTML Code will appear here..."></textarea>
+                    <button onclick="copyToClipboard('h-html')" style="background: #4caf50;">Copy HTML Code</button>
+                </div>
+
+                <div class="preview-title" style="margin-top: 20px;">Live Preview</div>
+                <div id="h-preview" class="preview-box">
+                    <i>Preview will appear here...</i>
+                </div>
             </div>
         </div>
-
-        <div class="table-container">
-            <table class="data-table" id="hiring-table">
-                <thead>
-                    <tr>
-                        <th style="width: 40px; text-align: center;">Select</th>
-                        <th>Position</th>
-                        <th>Base Recommended Stats</th>
-                        <th>Required Stats (Calculated)</th>
-                    </tr>
-                </thead>
-                <tbody id="hiring-table-body">
-                    <!-- Populated by JS -->
-                </tbody>
-            </table>
-        </div>
-
-        <h3>2. Offer & Work Style</h3>
-        <div class="work-style-options">
-            <label class="work-style-option tooltip">
-                <input type="radio" name="h-style" value="paying" checked> Paying Salary
-                <span class="tooltiptext">You will pay the employee a daily salary for their high efficiency.</span>
-            </label>
-            <label class="work-style-option tooltip">
-                <input type="radio" name="h-style" value="taxing"> Requiring Tax
-                <span class="tooltiptext">The employee must pay you daily to work here and receive perks.</span>
-            </label>
-            <label class="work-style-option tooltip">
-                <input type="radio" name="h-style" value="unpaid"> Unpaid (Free)
-                <span class="tooltiptext">Mutual benefit: they work for free, you get their efficiency for free.</span>
-            </label>
-        </div>
-
-        <div class="form-grid" style="margin-top: 15px;">
-            <div class="input-group">
-                <label>Company Link</label>
-                <input type="text" id="h-link" placeholder="e.g. https://www.torn.com/joblist.php?step=corpinfo&ID=12345">
-            </div>
-        </div>
-
-
-        <div class="form-grid" style="margin-top: 15px;">
-            <div class="input-group">
-                <label>Post Color Theme</label>
-                <select id="h-post-theme" onchange="generateHiringHTML()">
-                    <option value="#333333">Default (Dark Grey)</option>
-                    <option value="#3b5998">Torn Blue</option>
-                    <option value="#2e7d32">Green</option>
-                    <option value="#c62828">Red</option>
-                    <option value="#6a1b9a">Purple</option>
-                    <option value="#e65100">Orange</option>
-                </select>
-            </div>
-        </div>
-<div class="form-grid">
-            <div class="input-group">
-                <label>Perks / Pay Details</label>
-                <textarea id="h-perks" placeholder="e.g. 1m/day, rotating trains..." rows="3"></textarea>
-            </div>
-        </div>
-
-        <button onclick="generateHiringHTML()" style="margin-top: 10px;">Generate HTML Code for Hiring Post</button>
-
-
-        <div class="html-box">
-            <textarea id="h-html" readonly placeholder="HTML Code will appear here..."></textarea>
-            <button onclick="copyToClipboard('h-html')" style="background: #4caf50;">Copy HTML Code</button>
-        </div>
-
-        <div class="preview-title" style="margin-top: 20px;">Live Preview</div>
-        <div id="h-preview" class="preview-box">
-            <i>Preview will appear here...</i>
-        </div>
-
-
-    <div style="text-align: center; margin-top: 30px; font-size: 0.85rem; color: var(--text-muted); padding: 15px; border-top: 1px solid var(--border);">
-        This website was developed by <a href="https://jules.google/" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: bold;">Jules AI</a>.
-        <br>
-        View source code on <a href="https://github.com/chaba-xciv/Torn_Job_Post" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: bold;">GitHub</a>.
-    </div>
     </div>
 </div>
 

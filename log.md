@@ -108,3 +108,22 @@
 - **Cause:** N/A
 - **Resolution:** Successfully implemented all requested UI/UX improvements.
 - **Future Prevention:** Detailed logging maintained.
+
+## Update: UX/UI Improvements for Widescreens
+
+### Changes Made:
+- **Floating Header Controls**: Moved the 'Clear', 'Theme' buttons, and the footer credits to a fixed, semi-transparent container in the top-right corner of the screen. This ensures these controls are always accessible regardless of scroll position without cluttering the main content area.
+- **Two-Column Layout (Desktop)**: Redesigned the main content area for both 'Worker' and 'Hiring' tabs to utilize a two-column grid layout on screens wider than 992px. The form inputs are positioned on the left, while the resulting data tables, HTML output, and Live Preview are displayed on the right.
+- **Max Width Increase**: Increased the maximum width of the main container from `1000px` to `1400px` to better utilize the available screen real estate on 16:9 widescreen monitors.
+- **Responsive Fallback**: Added CSS media queries to ensure the layout gracefully degrades back to a single-column layout on smaller screens (tablets and mobile devices) and adjustments for the floating controls on narrow screens.
+
+### Reason for Changes:
+- To address user feedback stating that the previous single-column design resulted in an excessively long, "scrolly" page on standard 16:9 desktop monitors, leading to a poor user experience.
+- To improve usability by keeping relevant inputs and outputs visible simultaneously without requiring constant vertical scrolling.
+
+### Error Logging:
+- **Type:** Human Error / Suboptimal Design
+- **Detection:** User feedback ("เนื้อหาในเว็บเป็นแท่งยาวจนหลุดขอบจอไปเยอะ" / The content is a long vertical bar that goes way off screen).
+- **Cause:** The previous design iteration focused on responsiveness but failed to optimize layout for wider desktop screens, relying entirely on a single-column flow regardless of available horizontal space.
+- **Resolution:** Implemented CSS Grid to create a responsive two-column layout that specifically targets and utilizes wider viewports, while maintaining a single column for mobile.
+- **Future Prevention:** When designing responsive layouts, explicitly consider and test how the UI scales and utilizes space on larger desktop monitors (e.g., standard 1080p / 16:9 displays), not just mobile and tablet sizes.
