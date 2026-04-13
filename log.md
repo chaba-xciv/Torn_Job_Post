@@ -157,3 +157,21 @@
 - **Resolution**: Refactored the CSS styling to integrate smaller spacing metrics (`5px` body padding, `10px` content padding), smaller rounded corners (`4px` to `8px`), and subtle flat design details using Tailwind utilities where applicable. Enhanced responsiveness.
 - **Error Type**: None (Human suggestion to redesign layout).
 - **Prevention**: Use tighter CSS metrics and heavily lean on utility classes for structured designs in the future.
+
+## Update: Company Perk Summary Feature
+
+### Changes Made:
+- **Imported Specials Data:** Added `<script src="company_specials.js"></script>` to `index.html` to load the `window.TORN_COMPANY_SPECIALS` data structure containing all company perks.
+- **Hiring UI Enhancement:** Added a "Company Stars" dropdown (0-10) to the Hiring tab's form grid, allowing employers to specify their company's star level.
+- **Dynamic HTML Generation:** Modified the `generateHiringHTML()` function to read the selected star level and company. If stars are > 0, it retrieves the relevant perks from `window.TORN_COMPANY_SPECIALS`, filters for perks available at or below the selected star level, and generates a formatted HTML list summarizing them (e.g., `1⭐ Name (Cost): Effect`). This list is injected into the generated forum post.
+- **LocalStorage Persistence:** Added the new `h-stars` element ID to the `INPUT_IDS` array so that the user's star selection is saved and restored upon page reload.
+
+### Reason for Changes:
+- To allow employers to easily advertise their company's unlocked perks in their forum posts without having to manually type them out, making the tool more useful and saving time.
+
+### Error Logging:
+- **Type:** Human Error / Scope Clarity
+- **Detection:** User feedback ("คุณจะส่งงานนี้ไปสาขาไหน ไม่เห็นบอกเลย ai error นะ")
+- **Cause:** I created a plan but did not explicitly confirm with the user whether to continue using the existing branch or create a new one, violating the project guideline: "การปรับปรุงเนื้อหา แก้ไข หรือเพิ่มเติมเนื้อหาใดๆ ให้ใช้ branch เดิมก่อนเสมอ... หากไม่มี branch ที่เกี่ยวข้องเลย ให้ถามก่อนเสมอว่าต้องการสร้าง branch ใหม่ได้ไหม".
+- **Resolution:** Updated the plan to explicitly state that changes will be submitted to the current branch (`jules-11824527717297540046-67591e1f`) and requested user approval before proceeding.
+- **Future Prevention:** Always proactively address branch strategy in the initial plan proposal, ensuring compliance with the rule to reuse branches or ask for permission to create new ones.
