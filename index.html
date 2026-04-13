@@ -17,8 +17,20 @@
             --danger: #d32f2f;
         }
 
+        body.dark-theme {
+            --bg-color: #18191a;
+            --card-bg: #242526;
+            --text-main: #e4e6eb;
+            --text-muted: #b0b3b8;
+            --primary: #4e8cff;
+            --primary-hover: #3b71d6;
+            --border: #3e4042;
+            --highlight: #3a3b3c;
+        }
+
+        /* Default dark theme if preferred by OS */
         @media (prefers-color-scheme: dark) {
-            :root {
+            body:not(.light-theme) {
                 --bg-color: #18191a;
                 --card-bg: #242526;
                 --text-main: #e4e6eb;
@@ -30,24 +42,59 @@
             }
         }
 
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid white;
+            color: white;
+            width: auto;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 0;
+        }
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .header-top {
+            position: relative;
+        }
+
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
         }
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
             background: var(--card-bg);
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             overflow: hidden;
             border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive grid adjustments */
+        @media (max-width: 600px) {
+            body { padding: 5px; }
+            .tabs { flex-direction: column; }
+            .tab { border-bottom: 1px solid var(--border); }
+            .form-grid { grid-template-columns: 1fr; }
+            .table-container { max-height: 300px; }
+            .data-table th, .data-table td { padding: 5px; font-size: 0.85rem; }
         }
 
         .header {
@@ -237,13 +284,35 @@
         .html-box { margin-top: 20px; }
         .html-box textarea { height: 200px; resize: vertical; }
 
+        .preview-box {
+            margin-top: 15px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--card-bg);
+            /* To simulate Torn forum background which can be light/dark based on user setting,
+               but we let it inherit the card-bg so they can see how it looks in their current theme */
+        }
+        .preview-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
+    <div class="header header-top">
         <h1>Torn City - Forum Post Builder</h1>
+        <div style="position: absolute; top: 15px; right: 15px; display: flex; gap: 10px;">
+            <button class="theme-toggle" onclick="clearData()" style="border-color: #ff5252; color: #ff5252;" title="Clear all saved data">🗑️ Clear</button>
+            <button id="theme-toggle-btn" class="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
+        </div>
     </div>
 
     <div class="tabs">
@@ -325,7 +394,21 @@
             </label>
         </div>
 
+
         <div class="form-grid" style="margin-top: 15px;">
+            <div class="input-group">
+                <label>Post Color Theme</label>
+                <select id="w-post-theme" onchange="generateWorkerHTML()">
+                    <option value="#333333">Default (Dark Grey)</option>
+                    <option value="#3b5998">Torn Blue</option>
+                    <option value="#2e7d32">Green</option>
+                    <option value="#c62828">Red</option>
+                    <option value="#6a1b9a">Purple</option>
+                    <option value="#e65100">Orange</option>
+                </select>
+            </div>
+        </div>
+<div class="form-grid" style="margin-top: 15px;">
             <div class="input-group">
                 <label>Additional Notes</label>
                 <textarea id="w-notes" placeholder="Enter any extra notes for the employers..." rows="3"></textarea>
@@ -334,10 +417,17 @@
 
         <button onclick="generateWorkerHTML()" style="margin-top: 20px;">Generate HTML Code for Forum Post</button>
 
+
         <div class="html-box">
             <textarea id="w-html" readonly placeholder="HTML Code will appear here..."></textarea>
             <button onclick="copyToClipboard('w-html')" style="background: #4caf50;">Copy HTML Code</button>
         </div>
+
+        <div class="preview-title" style="margin-top: 20px;">Live Preview</div>
+        <div id="w-preview" class="preview-box">
+            <i>Preview will appear here...</i>
+        </div>
+
     </div>
 
     <div id="hiring-tab" class="content">
@@ -394,7 +484,21 @@
             </div>
         </div>
 
-        <div class="form-grid">
+
+        <div class="form-grid" style="margin-top: 15px;">
+            <div class="input-group">
+                <label>Post Color Theme</label>
+                <select id="h-post-theme" onchange="generateHiringHTML()">
+                    <option value="#333333">Default (Dark Grey)</option>
+                    <option value="#3b5998">Torn Blue</option>
+                    <option value="#2e7d32">Green</option>
+                    <option value="#c62828">Red</option>
+                    <option value="#6a1b9a">Purple</option>
+                    <option value="#e65100">Orange</option>
+                </select>
+            </div>
+        </div>
+<div class="form-grid">
             <div class="input-group">
                 <label>Perks / Pay Details</label>
                 <textarea id="h-perks" placeholder="e.g. 1m/day, rotating trains..." rows="3"></textarea>
@@ -403,10 +507,23 @@
 
         <button onclick="generateHiringHTML()" style="margin-top: 10px;">Generate HTML Code for Hiring Post</button>
 
+
         <div class="html-box">
             <textarea id="h-html" readonly placeholder="HTML Code will appear here..."></textarea>
             <button onclick="copyToClipboard('h-html')" style="background: #4caf50;">Copy HTML Code</button>
         </div>
+
+        <div class="preview-title" style="margin-top: 20px;">Live Preview</div>
+        <div id="h-preview" class="preview-box">
+            <i>Preview will appear here...</i>
+        </div>
+
+
+    <div style="text-align: center; margin-top: 30px; font-size: 0.85rem; color: var(--text-muted); padding: 15px; border-top: 1px solid var(--border);">
+        This website was developed by <a href="https://jules.google/" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: bold;">Jules AI</a>.
+        <br>
+        View source code on <a href="https://github.com/chaba-xciv/Torn_Job_Post" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: bold;">GitHub</a>.
+    </div>
     </div>
 </div>
 
@@ -457,15 +574,25 @@
         generateJobsDB();
         const companies = [...new Set(jobsDB.map(job => job.c))].sort();
 
+        loadData();
+
         const hCompany = document.getElementById('h-company');
         if (hCompany) {
             companies.forEach(comp => {
                 hCompany.add(new Option(comp, comp));
             });
+
+            // Restore h-company specifically after options are added
+            const savedComp = localStorage.getItem('h-company');
+            if(savedComp && companies.includes(savedComp)) {
+                hCompany.value = savedComp;
+            }
+
             renderHiringTable();
         }
 
         renderWorkerTable();
+        attachSaveListeners();
     }
 
     function renderHiringTable() {
@@ -634,31 +761,46 @@
         let jobListHTML = "";
 
         if(checkedBoxes.length > 0) {
-            jobListHTML = "<br><br><b>🎯 Target Positions & My Expected Eff:</b><ul>";
+            jobListHTML = `<strong style="color: ${document.getElementById('w-post-theme') ? document.getElementById('w-post-theme').value : '#333333'};">🎯 Target Positions & My Expected Eff:</strong><ul style="margin-top: 5px; margin-bottom: 0;">`;
             checkedBoxes.forEach(cb => {
                 const [comp, pos, eff] = cb.value.split('|');
-                let meritStr = merit > 0 ? ` + ${merit}% merit ${merit}/10` : "";
-                jobListHTML += `<li>${comp} - ${pos}: <b>with ${eff}% eff job stats${meritStr}</b></li>`;
+                let meritStr = merit > 0 ? ` + ${merit}% merit` : "";
+                jobListHTML += `<li>${comp} - ${pos}: <b>${eff}% eff</b>${meritStr}</li>`;
             });
             jobListHTML += "</ul>";
         } else {
-            jobListHTML = "<br><br><i>(Open to any positions matching my stats)</i><br><br>";
+            jobListHTML = "<i>(Open to any positions matching my stats)</i>";
         }
 
         const notes = document.getElementById('w-notes').value;
         const formattedNotes = notes.replace(/\n/g, "<br>");
 
-        const htmlCode = `<b>Looking for a Job</b><br><br>
-<b>📊 My Base Stats:</b><br>
-MAN: ${Number(man).toLocaleString()}<br>
-INT: ${Number(int).toLocaleString()}<br>
-END: ${Number(end).toLocaleString()}<br><br>
-<b>⭐ Merits:</b> ${merit}/10 Employee Stats<br>
-<b>💼 Work Style:</b> ${workStyleText}
-${jobListHTML}
-${notes ? `<b>💬 Notes:</b><br>${formattedNotes}` : ''}`;
+        const themeColor = document.getElementById('w-post-theme') ? document.getElementById('w-post-theme').value : '#333333';
+
+        const htmlCode = `<div style="border: 2px solid ${themeColor}; border-radius: 8px; padding: 15px; max-width: 600px; font-family: Arial, sans-serif; background-color: transparent;">
+    <h2 style="color: ${themeColor}; margin-top: 0; border-bottom: 2px solid ${themeColor}; padding-bottom: 5px;">Looking for a Job</h2>
+    <div style="margin-bottom: 10px;">
+        <strong style="color: ${themeColor};">📊 My Base Stats:</strong><br>
+        • MAN: ${Number(man).toLocaleString()}<br>
+        • INT: ${Number(int).toLocaleString()}<br>
+        • END: ${Number(end).toLocaleString()}<br>
+    </div>
+    <div style="margin-bottom: 10px;">
+        <strong style="color: ${themeColor};">⭐ Merits:</strong> ${merit}/10 Employee Stats<br>
+    </div>
+    <div style="margin-bottom: 10px;">
+        <strong style="color: ${themeColor};">💼 Work Style:</strong> ${workStyleText}
+    </div>
+    <div style="margin-bottom: 10px;">
+        ${jobListHTML}
+    </div>
+    ${notes ? `<div style="margin-top: 15px; padding: 10px; background-color: rgba(0,0,0,0.05); border-left: 4px solid ${themeColor};">
+        <strong style="color: ${themeColor};">💬 Notes:</strong><br>${formattedNotes}
+    </div>` : ''}
+</div>`;
 
         document.getElementById('w-html').value = htmlCode;
+        document.getElementById('w-preview').innerHTML = htmlCode;
     }
 
     function generateHiringHTML() {
@@ -691,17 +833,34 @@ ${notes ? `<b>💬 Notes:</b><br>${formattedNotes}` : ''}`;
 
         const formattedPerks = perks.replace(/\n/g, "<br>");
 
-        const htmlCode = `<b>🏢 Hiring: ${comp} </b><br><br>
-We are currently looking for dedicated workers to join our team!<br><br>
-<b>🎯 Target Efficiency:</b> <b>${eff} Eff</b><br>
-<b>💼 Work Style:</b> ${workStyleText}<br><br>
-<b>📌 Positions Open:</b><br>
-${positionsHTML}<br>
-${formattedPerks ? `<b>💰 What we offer / Details:</b><br>${formattedPerks}<br><br>` : ''}
-If you meet the requirements, please PM me or apply directly!
-${link ? `<br><br><a href="${link}"><b>[Apply Here]</b></a>` : ''}`;
+        const themeColor = document.getElementById('h-post-theme') ? document.getElementById('h-post-theme').value : '#333333';
+
+        const htmlCode = `<div style="border: 2px solid ${themeColor}; border-radius: 8px; padding: 15px; max-width: 600px; font-family: Arial, sans-serif; background-color: transparent;">
+    <h2 style="color: ${themeColor}; margin-top: 0; border-bottom: 2px solid ${themeColor}; padding-bottom: 5px;">🏢 Hiring: ${comp}</h2>
+    <p>We are currently looking for dedicated workers to join our team!</p>
+
+    <div style="margin-bottom: 10px;">
+        <strong style="color: ${themeColor};">🎯 Target Efficiency:</strong> <b>${eff} Eff</b><br>
+    </div>
+    <div style="margin-bottom: 10px;">
+        <strong style="color: ${themeColor};">💼 Work Style:</strong> ${workStyleText}<br>
+    </div>
+    <div style="margin-bottom: 10px;">
+        <strong style="color: ${themeColor};">📌 Positions Open:</strong><br>
+        ${positionsHTML}
+    </div>
+    ${formattedPerks ? `<div style="margin-top: 15px; padding: 10px; background-color: rgba(0,0,0,0.05); border-left: 4px solid ${themeColor};">
+        <strong style="color: ${themeColor};">💰 What we offer / Details:</strong><br>${formattedPerks}
+    </div>` : ''}
+
+    <p style="margin-top: 15px;">If you meet the requirements, please PM me or apply directly!</p>
+    ${link ? `<div style="text-align: center; margin-top: 20px;">
+        <a href="${link}" style="background-color: ${themeColor}; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">👉 Apply Here 👈</a>
+    </div>` : ''}
+</div>`;
 
         document.getElementById('h-html').value = htmlCode;
+        document.getElementById('h-preview').innerHTML = htmlCode;
     }
 
     function copyToClipboard(elementId) {
@@ -713,7 +872,118 @@ ${link ? `<br><br><a href="${link}"><b>[Apply Here]</b></a>` : ''}`;
     }
 
     // Load dropdowns on page load
-    window.onload = initDropdowns;
+    window.onload = function() { loadTheme(); initDropdowns(); };
+
+
+
+    // --- LocalStorage Logic ---
+    const INPUT_IDS = [
+        'w-man', 'w-int', 'w-end', 'w-merit', 'w-notes', 'w-post-theme',
+        'h-eff', 'h-link', 'h-perks', 'h-post-theme'
+    ]; // h-company loaded later
+
+    function saveData() {
+        INPUT_IDS.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                localStorage.setItem(id, el.value);
+            }
+        });
+
+        const wStyle = document.querySelector('input[name="w-style"]:checked');
+        if (wStyle) localStorage.setItem('w-style', wStyle.value);
+
+        const hStyle = document.querySelector('input[name="h-style"]:checked');
+        if (hStyle) localStorage.setItem('h-style', hStyle.value);
+
+        const hCompany = document.getElementById('h-company');
+        if (hCompany) localStorage.setItem('h-company', hCompany.value);
+    }
+
+    function loadData() {
+        INPUT_IDS.forEach(id => {
+            const val = localStorage.getItem(id);
+            if (val !== null) {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            }
+        });
+
+        const wStyleVal = localStorage.getItem('w-style');
+        if (wStyleVal) {
+            const r = document.querySelector(`input[name="w-style"][value="${wStyleVal}"]`);
+            if (r) r.checked = true;
+        }
+
+        const hStyleVal = localStorage.getItem('h-style');
+        if (hStyleVal) {
+            const r = document.querySelector(`input[name="h-style"][value="${hStyleVal}"]`);
+            if (r) r.checked = true;
+        }
+    }
+
+    function clearData() {
+        if(confirm("Are you sure you want to clear all your saved inputs?")) {
+            INPUT_IDS.forEach(id => localStorage.removeItem(id));
+            localStorage.removeItem('w-style');
+            localStorage.removeItem('h-style');
+            localStorage.removeItem('h-company');
+            location.reload();
+        }
+    }
+
+    // Attach listeners to save on change
+    function attachSaveListeners() {
+        INPUT_IDS.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.addEventListener('input', saveData);
+                el.addEventListener('change', saveData);
+            }
+        });
+        document.querySelectorAll('input[name="w-style"], input[name="h-style"]').forEach(el => {
+            el.addEventListener('change', saveData);
+        });
+
+        const hCompany = document.getElementById('h-company');
+        if(hCompany) {
+            hCompany.addEventListener('change', saveData);
+        }
+    }
+
+    // Theme Toggle Functionality
+    function toggleTheme() {
+        const body = document.body;
+        if (body.classList.contains('dark-theme')) {
+            body.classList.remove('dark-theme');
+            body.classList.add('light-theme');
+            localStorage.setItem('theme', 'light');
+        } else if (body.classList.contains('light-theme')) {
+            body.classList.remove('light-theme');
+            body.classList.add('dark-theme');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            // No class means it's using OS preference
+            const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (isDark) {
+                body.classList.add('light-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+    }
+
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-theme');
+        } else if (savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+        }
+    }
+
 </script>
 
 </body>

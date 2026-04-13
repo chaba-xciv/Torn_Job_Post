@@ -84,3 +84,27 @@
 - **Detection:** User feedback.
 - **Cause:** The previous prompt did not specify removing the default boilerplate text for workers, nor did it explicitly mention the need for an application link field for employers.
 - **Resolution:** Added the requested inputs and modified the HTML template generators to consume them correctly.
+
+## Update: UI Revamp, Themes, Live Preview, and LocalStorage
+
+### Changes Made:
+- **Responsive Layout:** Refactored CSS using Flexbox and Grid to ensure the layout is clean, fits well on desktop and mobile screens, and eliminates unnecessary vertical/horizontal scrolling.
+- **Theme Toggle:** Added a Light/Dark theme toggle button in the header. The default theme inherits the user's OS preference via `prefers-color-scheme`, and changes are saved to `localStorage`.
+- **Post Color Themes:** Added a dropdown selection (Default, Torn Blue, Green, Red, Purple, Orange) to choose the accent color for the generated HTML post.
+- **HTML Card Format:** Wrapped the generated HTML output in a stylish inline CSS card to improve readability on the Torn forums.
+- **Apply Button:** Converted the plain text link in the Hiring post to an attractive "Apply Here" button using inline CSS.
+- **Live HTML Preview:** Added a section below the HTML code boxes to render and preview the HTML output dynamically in the current Light/Dark theme context.
+- **Local Storage Integration:** Automatically saves form inputs (stats, preferences, notes) to `localStorage` to persist data across reloads, preventing data loss.
+- **Clear Data Button:** Added a 'Clear' button to the header to easily purge `localStorage` and reset the form.
+- **Footer:** Added a developer attribution footer linking to Jules AI and the project's GitHub repository.
+
+### Reason for Changes:
+- Requested by user to enhance the UX/UI experience, make the tool more professional, and provide better visual feedback (preview) of what the forum post will look like before copying.
+- Implementing memory persistence (`localStorage`) greatly enhances usability by saving the user's work.
+
+### Error Logging:
+- **Type:** None
+- **Detection:** N/A
+- **Cause:** N/A
+- **Resolution:** Successfully implemented all requested UI/UX improvements.
+- **Future Prevention:** Detailed logging maintained.
