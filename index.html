@@ -156,6 +156,84 @@
         }
         .hiring-result strong { font-size: 1.2rem; display: block; margin-top: 10px; color: var(--primary); }
 
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        .data-table th, .data-table td {
+            border: 1px solid var(--border);
+            padding: 8px;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: var(--primary);
+            color: white;
+            cursor: pointer;
+            position: sticky;
+            top: 0;
+        }
+        .data-table th:hover {
+            background-color: var(--primary-hover);
+        }
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            border-bottom: 1px dotted var(--text-muted);
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            font-weight: normal;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .filters input {
+            flex: 1;
+        }
+        .work-style-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .work-style-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .work-style-option input[type="radio"] {
+            width: auto;
+        }
         .html-box { margin-top: 20px; }
         .html-box textarea { height: 200px; resize: vertical; }
 
@@ -178,19 +256,19 @@
         <div class="form-grid">
             <div class="input-group">
                 <label>Manual Labor (MAN)</label>
-                <input type="number" id="w-man" value="0" min="0">
+                <input type="number" id="w-man" value="0" min="0" oninput="renderWorkerTable()">
             </div>
             <div class="input-group">
                 <label>Intelligence (INT)</label>
-                <input type="number" id="w-int" value="0" min="0">
+                <input type="number" id="w-int" value="0" min="0" oninput="renderWorkerTable()">
             </div>
             <div class="input-group">
                 <label>Endurance (END)</label>
-                <input type="number" id="w-end" value="0" min="0">
+                <input type="number" id="w-end" value="0" min="0" oninput="renderWorkerTable()">
             </div>
             <div class="input-group">
                 <label>Employee Merits (+3% per upgrade)</label>
-                <select id="w-merit">
+                <select id="w-merit" onchange="renderWorkerTable()">
                     <option value="0">0/10 (0%)</option>
                     <option value="1">1/10 (+3%)</option>
                     <option value="2">2/10 (+6%)</option>
@@ -208,24 +286,43 @@
 
         <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
 
-        <h3>2. Select Desired Jobs (Max 3 positions)</h3>
-        <div class="form-grid">
-            <div class="input-group">
-                <label>Company</label>
-                <select id="w-company" onchange="populateWorkerPositions()"></select>
-            </div>
-            <div class="input-group">
-                <label>Position</label>
-                <select id="w-position"></select>
-            </div>
-            <div class="input-group" style="display: flex; align-items: flex-end;">
-                <button class="add-btn" onclick="addJobToBasket()">+ Add to Basket</button>
-            </div>
+        <h3>2. Filter and Select Jobs</h3>
+        <div class="filters">
+            <input type="text" id="w-filter-company" placeholder="Filter/Exclude Company (e.g. -Farm)" oninput="renderWorkerTable()">
+            <input type="text" id="w-filter-position" placeholder="Filter Position" oninput="renderWorkerTable()">
         </div>
 
-        <div class="basket" id="basket-container" style="display:none;">
-            <strong>Selected Items:</strong>
-            <div id="basket-list"></div>
+        <div class="table-container">
+            <table class="data-table" id="worker-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40px; text-align: center;">Select</th>
+                        <th onclick="sortWorkerTable('c')">Company ↕</th>
+                        <th onclick="sortWorkerTable('p')">Position ↕</th>
+                        <th>Recommended Stats</th>
+                        <th onclick="sortWorkerTable('eff')">Eff ↕</th>
+                    </tr>
+                </thead>
+                <tbody id="worker-table-body">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <h3>3. Work Style</h3>
+        <div class="work-style-options">
+            <label class="work-style-option tooltip">
+                <input type="radio" name="w-style" value="salary" checked> Receive Salary
+                <span class="tooltiptext">You expect to be paid because your high efficiency benefits the company.</span>
+            </label>
+            <label class="work-style-option tooltip">
+                <input type="radio" name="w-style" value="tax"> Pay Tax
+                <span class="tooltiptext">You will pay the company daily to work there, usually because you have low stats but want the company perks/specials.</span>
+            </label>
+            <label class="work-style-option tooltip">
+                <input type="radio" name="w-style" value="unpaid"> Unpaid (Free)
+                <span class="tooltiptext">Mutual benefit: you work for free to get company perks, and the company gets your efficiency for free.</span>
+            </label>
         </div>
 
         <button onclick="generateWorkerHTML()" style="margin-top: 20px;">Generate HTML Code for Forum Post</button>
@@ -237,31 +334,55 @@
     </div>
 
     <div id="hiring-tab" class="content">
-        <h3>Calculate Required Stats for Applicants</h3>
+        <h3>1. Setup Hiring Requirements</h3>
         <div class="form-grid">
             <div class="input-group">
                 <label>Company</label>
-                <select id="h-company" onchange="populateHiringPositions()"></select>
+                <select id="h-company" onchange="renderHiringTable()"></select>
             </div>
             <div class="input-group">
-                <label>Position</label>
-                <select id="h-position" onchange="calculateHiringTarget()"></select>
-            </div>
-            <div class="input-group">
-                <label>Target Eff</label>
-                <input type="number" id="h-eff" value="110" oninput="calculateHiringTarget()">
+                <label class="tooltip">Target Eff
+                    <span class="tooltiptext">The efficiency you want the employee to have.</span>
+                </label>
+                <input type="number" id="h-eff" value="110" oninput="renderHiringTable()">
             </div>
         </div>
 
-        <div class="hiring-result" id="hiring-calc-result">
-            The system will calculate balanced stats here
+        <div class="table-container">
+            <table class="data-table" id="hiring-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40px; text-align: center;">Select</th>
+                        <th>Position</th>
+                        <th>Base Recommended Stats</th>
+                        <th>Required Stats (Calculated)</th>
+                    </tr>
+                </thead>
+                <tbody id="hiring-table-body">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
         </div>
 
-        <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+        <h3>2. Offer & Work Style</h3>
+        <div class="work-style-options">
+            <label class="work-style-option tooltip">
+                <input type="radio" name="h-style" value="paying" checked> Paying Salary
+                <span class="tooltiptext">You will pay the employee a daily salary for their high efficiency.</span>
+            </label>
+            <label class="work-style-option tooltip">
+                <input type="radio" name="h-style" value="taxing"> Requiring Tax
+                <span class="tooltiptext">The employee must pay you daily to work here and receive perks.</span>
+            </label>
+            <label class="work-style-option tooltip">
+                <input type="radio" name="h-style" value="unpaid"> Unpaid (Free)
+                <span class="tooltiptext">Mutual benefit: they work for free, you get their efficiency for free.</span>
+            </label>
+        </div>
 
-        <div class="form-grid">
+        <div class="form-grid" style="margin-top: 15px;">
             <div class="input-group">
-                <label>Perks / Pay</label>
+                <label>Perks / Pay Details</label>
                 <textarea id="h-perks" placeholder="e.g. 1m/day, rotating trains..." rows="3"></textarea>
             </div>
         </div>
@@ -316,43 +437,65 @@
     let workerBasket = [];
 
     // Get unique company names to populate dropdown
+    let currentSort = { column: 'eff', asc: false };
+
     function initDropdowns() {
         generateJobsDB();
         const companies = [...new Set(jobsDB.map(job => job.c))].sort();
 
-        const wCompany = document.getElementById('w-company');
         const hCompany = document.getElementById('h-company');
+        if (hCompany) {
+            companies.forEach(comp => {
+                hCompany.add(new Option(comp, comp));
+            });
+            renderHiringTable();
+        }
 
-        companies.forEach(comp => {
-            wCompany.add(new Option(comp, comp));
-            hCompany.add(new Option(comp, comp));
-        });
-
-        populateWorkerPositions();
-        populateHiringPositions();
+        renderWorkerTable();
     }
 
-    function populateWorkerPositions() {
-        const comp = document.getElementById('w-company').value;
-        const wPos = document.getElementById('w-position');
-        wPos.innerHTML = '';
+    function renderHiringTable() {
+        const tbody = document.getElementById('hiring-table-body');
+        if (!tbody) return;
 
-        const positions = jobsDB.filter(job => job.c === comp);
-        positions.forEach(job => {
-            wPos.add(new Option(`${job.p} (${job.reqP} ${job.typeP.toUpperCase()} / ${job.reqS} ${job.typeS.toUpperCase()})`, job.p));
-        });
-    }
-
-    function populateHiringPositions() {
         const comp = document.getElementById('h-company').value;
-        const hPos = document.getElementById('h-position');
-        hPos.innerHTML = '';
+        const targetEff = parseFloat(document.getElementById('h-eff').value) || 0;
 
         const positions = jobsDB.filter(job => job.c === comp);
+
+        // Keep checked state
+        const checkedBoxes = Array.from(document.querySelectorAll('.hiring-checkbox:checked')).map(cb => cb.value);
+
+        let html = '';
         positions.forEach(job => {
-            hPos.add(new Option(`${job.p}`, job.p));
+            let reqP_stat = 0, reqS_stat = 0;
+
+            if (targetEff > 90) {
+                let bonus = targetEff - 90;
+                let bonusPerSide = bonus / 2;
+                let multiplier = Math.pow(2, bonusPerSide / 5);
+                reqP_stat = Math.ceil(job.reqP * multiplier);
+                reqS_stat = Math.ceil(job.reqS * multiplier);
+            } else {
+                let effPerSide = targetEff / 2;
+                reqP_stat = Math.ceil((effPerSide / 45) * job.reqP);
+                reqS_stat = Math.ceil((effPerSide / 45) * job.reqS);
+            }
+
+            const reqText = `${reqP_stat.toLocaleString()} ${job.typeP.toUpperCase()} / ${reqS_stat.toLocaleString()} ${job.typeS.toUpperCase()}`;
+            const jobValue = `${job.p}|${reqText}`;
+            const isChecked = checkedBoxes.includes(jobValue) ? 'checked' : '';
+
+            html += `
+                <tr>
+                    <td style="text-align: center;"><input type="checkbox" class="hiring-checkbox" value="${jobValue}" ${isChecked}></td>
+                    <td>${job.p}</td>
+                    <td>${job.reqP.toLocaleString()} ${job.typeP.toUpperCase()} / ${job.reqS.toLocaleString()} ${job.typeS.toUpperCase()}</td>
+                    <td style="font-weight: bold; color: var(--primary);">${reqText}</td>
+                </tr>
+            `;
         });
-        calculateHiringTarget();
+        tbody.innerHTML = html;
     }
 
     function switchTab(tabId, evt) {
@@ -374,57 +517,90 @@
         return Math.floor(baseEff + bonus);
     }
 
-    function addJobToBasket() {
-        if(workerBasket.length >= 3) {
-            alert("You can only select a maximum of 3 positions.");
-            return;
+
+    function sortWorkerTable(column) {
+        if (currentSort.column === column) {
+            currentSort.asc = !currentSort.asc;
+        } else {
+            currentSort.column = column;
+            currentSort.asc = column !== 'eff'; // default desc for eff, asc for others
         }
+        renderWorkerTable();
+    }
 
-        const comp = document.getElementById('w-company').value;
-        const posName = document.getElementById('w-position').value;
-        const jobData = jobsDB.find(j => j.c === comp && j.p === posName);
-
-        // Get current stats
+    function calculateMyStats() {
         const man = parseFloat(document.getElementById('w-man').value) || 0;
         const int = parseFloat(document.getElementById('w-int').value) || 0;
         const end = parseFloat(document.getElementById('w-end').value) || 0;
         const meritLevel = parseInt(document.getElementById('w-merit').value) || 0;
         const multiplier = 1 + (meritLevel * 0.03);
-
-        const myStats = { man: man * multiplier, int: int * multiplier, end: end * multiplier };
-
-        const pStat = myStats[jobData.typeP];
-        const sStat = myStats[jobData.typeS];
-        const totalEff = getPartEff(pStat, jobData.reqP) + getPartEff(sStat, jobData.reqS);
-
-        workerBasket.push({ company: comp, position: posName, eff: totalEff });
-        renderBasket();
+        return { man: man * multiplier, int: int * multiplier, end: end * multiplier };
     }
 
-    function removeJob(index) {
-        workerBasket.splice(index, 1);
-        renderBasket();
-    }
+    function renderWorkerTable() {
+        const tbody = document.getElementById('worker-table-body');
+        if (!tbody) return;
 
-    function renderBasket() {
-        const container = document.getElementById('basket-container');
-        const list = document.getElementById('basket-list');
-        list.innerHTML = '';
+        const myStats = calculateMyStats();
+        let filterComp = document.getElementById('w-filter-company').value.toLowerCase().trim();
+        let filterPos = document.getElementById('w-filter-position').value.toLowerCase().trim();
 
-        if(workerBasket.length === 0) {
-            container.style.display = 'none';
-            return;
+        let excludeComp = false;
+        if (filterComp.startsWith('-')) {
+            excludeComp = true;
+            filterComp = filterComp.substring(1).trim();
         }
 
-        container.style.display = 'block';
-        workerBasket.forEach((item, index) => {
-            list.innerHTML += `
-                <div class="basket-item">
-                    <span>${item.company} - <b>${item.position}</b> (Eff: <span style="color:var(--primary); font-weight:bold;">${item.eff}</span>)</span>
-                    <button class="remove-btn" onclick="removeJob(${index})">Remove</button>
-                </div>
+        let tableData = jobsDB.map(job => {
+            const pStat = myStats[job.typeP] || 0;
+            const sStat = myStats[job.typeS] || 0;
+            const totalEff = getPartEff(pStat, job.reqP) + getPartEff(sStat, job.reqS);
+            return { ...job, eff: totalEff };
+        });
+
+        if (filterComp) {
+            if (excludeComp) {
+                tableData = tableData.filter(job => !job.c.toLowerCase().includes(filterComp));
+            } else {
+                tableData = tableData.filter(job => job.c.toLowerCase().includes(filterComp));
+            }
+        }
+        if (filterPos) {
+            tableData = tableData.filter(job => job.p.toLowerCase().includes(filterPos));
+        }
+
+        tableData.sort((a, b) => {
+            let valA = a[currentSort.column];
+            let valB = b[currentSort.column];
+
+            if (typeof valA === 'string') valA = valA.toLowerCase();
+            if (typeof valB === 'string') valB = valB.toLowerCase();
+
+            if (valA < valB) return currentSort.asc ? -1 : 1;
+            if (valA > valB) return currentSort.asc ? 1 : -1;
+            return 0;
+        });
+
+        // Keep track of previously checked items to maintain state during re-renders
+        const checkedBoxes = Array.from(document.querySelectorAll('.worker-checkbox:checked')).map(cb => cb.value);
+
+        let html = '';
+        tableData.forEach(job => {
+            const jobValue = `${job.c}|${job.p}|${job.eff}`;
+            const isChecked = checkedBoxes.includes(jobValue) ? 'checked' : '';
+            html += `
+                <tr>
+                    <td style="text-align: center;"><input type="checkbox" class="worker-checkbox" value="${jobValue}" ${isChecked}></td>
+                    <td>${job.c}</td>
+                    <td>${job.p}</td>
+                    <td>${job.reqP.toLocaleString()} ${job.typeP.toUpperCase()} / ${job.reqS.toLocaleString()} ${job.typeS.toUpperCase()}</td>
+                    <td style="font-weight: bold; color: var(--primary);">${job.eff}</td>
+                </tr>
             `;
         });
+        tbody.innerHTML = html;
+
+        // Add listener to limit checkboxes to 3 or any logic needed
     }
 
     function generateWorkerHTML() {
@@ -433,11 +609,22 @@
         const end = document.getElementById('w-end').value;
         const merit = document.getElementById('w-merit').value;
 
+        const selectedRadio = document.querySelector('input[name="w-style"]:checked');
+        let workStyleText = "Negotiable";
+        if (selectedRadio) {
+            if (selectedRadio.value === 'salary') workStyleText = "Seeking Daily Salary";
+            if (selectedRadio.value === 'tax') workStyleText = "Willing to Pay Daily Tax";
+            if (selectedRadio.value === 'unpaid') workStyleText = "Unpaid (Working for Perks)";
+        }
+
+        const checkedBoxes = Array.from(document.querySelectorAll('.worker-checkbox:checked'));
         let jobListHTML = "";
-        if(workerBasket.length > 0) {
+
+        if(checkedBoxes.length > 0) {
             jobListHTML = "<br><br><b>🎯 Target Positions & My Expected Eff:</b><ul>";
-            workerBasket.forEach(job => {
-                jobListHTML += `<li>${job.company} (${job.position}): <b>${job.eff} Eff</b></li>`;
+            checkedBoxes.forEach(cb => {
+                const [comp, pos, eff] = cb.value.split('|');
+                jobListHTML += `<li>${comp} - ${pos}: <b>${eff} Eff</b></li>`;
             });
             jobListHTML += "</ul>";
         } else {
@@ -449,7 +636,8 @@
 MAN: ${Number(man).toLocaleString()}<br>
 INT: ${Number(int).toLocaleString()}<br>
 END: ${Number(end).toLocaleString()}<br><br>
-<b>⭐ Merits:</b> ${merit}/10 Employee Stats
+<b>⭐ Merits:</b> ${merit}/10 Employee Stats<br>
+<b>💼 Work Style:</b> ${workStyleText}
 ${jobListHTML}
 <b>💬 Notes:</b><br>
 Active daily, looking for a stable company. PM me!`;
@@ -457,63 +645,41 @@ Active daily, looking for a stable company. PM me!`;
         document.getElementById('w-html').value = htmlCode;
     }
 
-    // Reverse calculation system to find balanced stats
-    function calculateHiringTarget() {
-        const comp = document.getElementById('h-company').value;
-        const posName = document.getElementById('h-position').value;
-        const targetEff = parseFloat(document.getElementById('h-eff').value) || 0;
-
-        const job = jobsDB.find(j => j.c === comp && j.p === posName);
-        if(!job) return;
-
-        let reqP_stat = 0, reqS_stat = 0;
-
-        if (targetEff > 90) {
-            // For Eff > 90, use Logarithm system to find bonus
-            let bonus = targetEff - 90;
-            let bonusPerSide = bonus / 2;
-            let multiplier = Math.pow(2, bonusPerSide / 5);
-            reqP_stat = Math.ceil(job.reqP * multiplier);
-            reqS_stat = Math.ceil(job.reqS * multiplier);
-        } else {
-            // For Eff <= 90, calculate from base efficiency (max 45 per side)
-            let effPerSide = targetEff / 2;
-            reqP_stat = Math.ceil((effPerSide / 45) * job.reqP);
-            reqS_stat = Math.ceil((effPerSide / 45) * job.reqS);
-        }
-
-        document.getElementById('hiring-calc-result').innerHTML = `
-            To achieve <b>${targetEff} Eff</b> in this position<br>
-            Applicants should have (Balanced) stats of at least:
-            <strong>${reqP_stat.toLocaleString()} ${job.typeP.toUpperCase()} / ${reqS_stat.toLocaleString()} ${job.typeS.toUpperCase()}</strong>
-        `;
-
-        // Save values for generating code
-        document.getElementById('hiring-calc-result').dataset.pType = job.typeP.toUpperCase();
-        document.getElementById('hiring-calc-result').dataset.sType = job.typeS.toUpperCase();
-        document.getElementById('hiring-calc-result').dataset.pStat = reqP_stat.toLocaleString();
-        document.getElementById('hiring-calc-result').dataset.sStat = reqS_stat.toLocaleString();
-    }
-
     function generateHiringHTML() {
         const comp = document.getElementById('h-company').value;
-        const pos = document.getElementById('h-position').value;
         const eff = document.getElementById('h-eff').value;
         const perks = document.getElementById('h-perks').value || "Good Pay / Daily Trains";
 
-        const resultDiv = document.getElementById('hiring-calc-result');
-        const pType = resultDiv.dataset.pType;
-        const sType = resultDiv.dataset.sType;
-        const pStat = resultDiv.dataset.pStat;
-        const sStat = resultDiv.dataset.sStat;
+        const selectedRadio = document.querySelector('input[name="h-style"]:checked');
+        let workStyleText = "Negotiable";
+        if (selectedRadio) {
+            if (selectedRadio.value === 'paying') workStyleText = "Paying Salary based on Eff";
+            if (selectedRadio.value === 'taxing') workStyleText = "Requiring Daily Tax for Perks";
+            if (selectedRadio.value === 'unpaid') workStyleText = "Unpaid (Mutual Benefit)";
+        }
+
+        const checkedBoxes = Array.from(document.querySelectorAll('.hiring-checkbox:checked'));
+        let positionsHTML = "";
+
+        if(checkedBoxes.length > 0) {
+            positionsHTML = "<ul>";
+            checkedBoxes.forEach(cb => {
+                const [pos, req] = cb.value.split('|');
+                positionsHTML += `<li><b>${pos}</b> - Required Stats: <i>${req}</i></li>`;
+            });
+            positionsHTML += "</ul>";
+        } else {
+            positionsHTML = "<i>No specific positions selected. Please ask!</i><br><br>";
+        }
 
         const formattedPerks = perks.replace(/\n/g, "<br>");
 
         const htmlCode = `<b>🏢 Hiring: ${comp} </b><br><br>
-We are currently looking for a dedicated worker to join our team!<br><br>
-<b>📌 Position Open:</b> ${pos}<br>
-<b>🎯 Requirement:</b> Minimum <b>${eff} Eff</b><br>
-<i>(Recommended Stats: ${pStat} ${pType} / ${sStat} ${sType})</i><br><br>
+We are currently looking for dedicated workers to join our team!<br><br>
+<b>🎯 Target Efficiency:</b> <b>${eff} Eff</b><br>
+<b>💼 Work Style:</b> ${workStyleText}<br><br>
+<b>📌 Positions Open:</b><br>
+${positionsHTML}<br>
 <b>💰 What we offer:</b><br>
 ${formattedPerks}<br><br>
 If you meet the requirements, please PM me or apply directly!`;
