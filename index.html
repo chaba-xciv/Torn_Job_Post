@@ -445,6 +445,22 @@
                         <select id="h-company" onchange="renderHiringTable()"></select>
                     </div>
                     <div class="input-group">
+                        <label>Company Stars</label>
+                        <select id="h-stars" onchange="generateHiringHTML()">
+                            <option value="0">0 ⭐</option>
+                            <option value="1">1 ⭐</option>
+                            <option value="2">2 ⭐</option>
+                            <option value="3">3 ⭐</option>
+                            <option value="4">4 ⭐</option>
+                            <option value="5">5 ⭐</option>
+                            <option value="6">6 ⭐</option>
+                            <option value="7">7 ⭐</option>
+                            <option value="8">8 ⭐</option>
+                            <option value="9">9 ⭐</option>
+                            <option value="10">10 ⭐</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
                         <label class="tooltip">Target Eff
                             <span class="tooltiptext">The efficiency you want the employee to have.</span>
                         </label>
@@ -534,6 +550,7 @@
     </div>
 </div>
 
+<script src="company_specials.js"></script>
 <script src="company_positions.js"></script>
 <script>
     // Database covers most companies in Torn
@@ -813,6 +830,7 @@
     function generateHiringHTML() {
         const comp = document.getElementById('h-company').value;
         const eff = document.getElementById('h-eff').value;
+        const stars = parseInt(document.getElementById('h-stars').value) || 0;
         const perks = document.getElementById('h-perks').value;
         const link = document.getElementById('h-link').value.trim();
 
@@ -822,6 +840,23 @@
             if (selectedRadio.value === 'paying') workStyleText = "Paying Salary based on Eff";
             if (selectedRadio.value === 'taxing') workStyleText = "Requiring Daily Tax for Perks";
             if (selectedRadio.value === 'unpaid') workStyleText = "Unpaid (Mutual Benefit)";
+        }
+
+        let companyPerksHTML = "";
+        if (stars > 0 && window.TORN_COMPANY_SPECIALS && window.TORN_COMPANY_SPECIALS[comp]) {
+            const companySpecials = window.TORN_COMPANY_SPECIALS[comp];
+            const unlockedSpecials = companySpecials.filter(special => special.stars <= stars);
+
+            if (unlockedSpecials.length > 0) {
+                companyPerksHTML = `<div style="margin-bottom: 10px;">
+        <strong style="color: ${document.getElementById('h-post-theme') ? document.getElementById('h-post-theme').value : '#333333'};">✨ Company Perks (${stars}⭐):</strong>
+        <ul style="margin-top: 5px; margin-bottom: 0;">`;
+                unlockedSpecials.forEach(special => {
+                    const costText = special.is_passive ? "Passive" : `${special.cost} JP`;
+                    companyPerksHTML += `<li><b>${special.stars}⭐ ${special.name}</b> (${costText}): <i>${special.effect}</i></li>`;
+                });
+                companyPerksHTML += `</ul></div>`;
+            }
         }
 
         const checkedBoxes = Array.from(document.querySelectorAll('.hiring-checkbox:checked'));
@@ -843,7 +878,7 @@
         const themeColor = document.getElementById('h-post-theme') ? document.getElementById('h-post-theme').value : '#333333';
 
         const htmlCode = `<div style="border: 2px solid ${themeColor}; border-radius: 8px; padding: 10px; max-width: 600px; font-family: Arial, sans-serif; background-color: transparent;">
-    <h2 style="color: ${themeColor}; margin-top: 0; border-bottom: 2px solid ${themeColor}; padding-bottom: 5px;">🏢 Hiring: ${comp}</h2>
+    <h2 style="color: ${themeColor}; margin-top: 0; border-bottom: 2px solid ${themeColor}; padding-bottom: 5px;">🏢 Hiring: ${comp} ${stars > 0 ? `(${stars}⭐)` : ''}</h2>
     <p>We are currently looking for dedicated workers to join our team!</p>
 
     <div style="margin-bottom: 10px;">
@@ -856,6 +891,7 @@
         <strong style="color: ${themeColor};">📌 Positions Open:</strong><br>
         ${positionsHTML}
     </div>
+    ${companyPerksHTML}
     ${formattedPerks ? `<div style="margin-top: 15px; padding: 5px; background-color: rgba(0,0,0,0.05); border-left: 4px solid ${themeColor};">
         <strong style="color: ${themeColor};">💰 What we offer / Details:</strong><br>${formattedPerks}
     </div>` : ''}
@@ -886,7 +922,7 @@
     // --- LocalStorage Logic ---
     const INPUT_IDS = [
         'w-man', 'w-int', 'w-end', 'w-merit', 'w-notes', 'w-post-theme',
-        'h-eff', 'h-link', 'h-perks', 'h-post-theme'
+        'h-eff', 'h-link', 'h-perks', 'h-post-theme', 'h-stars'
     ]; // h-company loaded later
 
     function saveData() {
