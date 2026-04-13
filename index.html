@@ -267,19 +267,19 @@
                 <input type="number" id="w-end" value="0" min="0" oninput="renderWorkerTable()">
             </div>
             <div class="input-group">
-                <label>Employee Merits (+3% per upgrade)</label>
+                <label>Employee Merits (+1% per upgrade)</label>
                 <select id="w-merit" onchange="renderWorkerTable()">
                     <option value="0">0/10 (0%)</option>
-                    <option value="1">1/10 (+3%)</option>
-                    <option value="2">2/10 (+6%)</option>
-                    <option value="3">3/10 (+9%)</option>
-                    <option value="4">4/10 (+12%)</option>
-                    <option value="5">5/10 (+15%)</option>
-                    <option value="6">6/10 (+18%)</option>
-                    <option value="7">7/10 (+21%)</option>
-                    <option value="8">8/10 (+24%)</option>
-                    <option value="9">9/10 (+27%)</option>
-                    <option value="10">10/10 (+30%)</option>
+                    <option value="1">1/10 (+1%)</option>
+                    <option value="2">2/10 (+2%)</option>
+                    <option value="3">3/10 (+3%)</option>
+                    <option value="4">4/10 (+4%)</option>
+                    <option value="5">5/10 (+5%)</option>
+                    <option value="6">6/10 (+6%)</option>
+                    <option value="7">7/10 (+7%)</option>
+                    <option value="8">8/10 (+8%)</option>
+                    <option value="9">9/10 (+9%)</option>
+                    <option value="10">10/10 (+10%)</option>
                 </select>
             </div>
         </div>
@@ -532,9 +532,8 @@
         const man = parseFloat(document.getElementById('w-man').value) || 0;
         const int = parseFloat(document.getElementById('w-int').value) || 0;
         const end = parseFloat(document.getElementById('w-end').value) || 0;
-        const meritLevel = parseInt(document.getElementById('w-merit').value) || 0;
-        const multiplier = 1 + (meritLevel * 0.03);
-        return { man: man * multiplier, int: int * multiplier, end: end * multiplier };
+        // Merits apply flat % bonus at the end, not to base stats
+        return { man: man, int: int, end: end };
     }
 
     function renderWorkerTable() {
@@ -624,7 +623,8 @@
             jobListHTML = "<br><br><b>🎯 Target Positions & My Expected Eff:</b><ul>";
             checkedBoxes.forEach(cb => {
                 const [comp, pos, eff] = cb.value.split('|');
-                jobListHTML += `<li>${comp} - ${pos}: <b>${eff} Eff</b></li>`;
+                let meritStr = merit > 0 ? ` + ${merit}% merit ${merit}/10` : "";
+                jobListHTML += `<li>${comp} - ${pos}: <b>with ${eff}% eff job stats${meritStr}</b></li>`;
             });
             jobListHTML += "</ul>";
         } else {
@@ -648,7 +648,7 @@ Active daily, looking for a stable company. PM me!`;
     function generateHiringHTML() {
         const comp = document.getElementById('h-company').value;
         const eff = document.getElementById('h-eff').value;
-        const perks = document.getElementById('h-perks').value || "Good Pay / Daily Trains";
+        const perks = document.getElementById('h-perks').value;
 
         const selectedRadio = document.querySelector('input[name="h-style"]:checked');
         let workStyleText = "Negotiable";
@@ -680,8 +680,7 @@ We are currently looking for dedicated workers to join our team!<br><br>
 <b>💼 Work Style:</b> ${workStyleText}<br><br>
 <b>📌 Positions Open:</b><br>
 ${positionsHTML}<br>
-<b>💰 What we offer:</b><br>
-${formattedPerks}<br><br>
+${formattedPerks ? `<b>💰 What we offer / Details:</b><br>${formattedPerks}<br><br>` : ''}
 If you meet the requirements, please PM me or apply directly!`;
 
         document.getElementById('h-html').value = htmlCode;
