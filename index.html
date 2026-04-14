@@ -536,7 +536,7 @@
     <p style="margin: 8px 0; font-size: 14px;"><b>Stats:</b> MAN: ${Number(man).toLocaleString()} | INT: ${Number(int).toLocaleString()} | END: ${Number(end).toLocaleString()}</p>
     <p style="margin: 8px 0; font-size: 14px;"><b>Merits:</b> ${merit}/10 | <b>Pref:</b> ${styleText}</p>
     ${selected.length > 0 ? `<p style="margin: 8px 0; font-size: 14px;"><b>Targeting:</b></p><ul style="margin:4px 0; padding-left:20px; font-size: 14px;">${selected.join('')}</ul>` : '<p style="margin: 8px 0; font-size: 14px; font-style: italic;">Open to all offers!</p>'}
-    ${document.getElementById('w-notes').value ? `<div style="margin-top: 12px; padding: 10px; background: #f9f9f9; border-left: 3px solid #ddd; font-size: 14px; border-radius: 4px;">${document.getElementById('w-notes').value.replace(/\n/g, '<br>')}</div>` : ''}
+    ${document.getElementById('w-notes').value ? `<div style="margin-top: 12px; padding: 10px; border-left: 3px solid #ddd; font-size: 14px; border-radius: 4px;">${document.getElementById('w-notes').value.replace(/\n/g, '<br>')}</div>` : ''}
 </div>`;
             document.getElementById('w-html').value = html.trim();
             document.getElementById('w-preview').innerHTML = html;
