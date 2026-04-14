@@ -175,3 +175,25 @@
 - **Cause:** I created a plan but did not explicitly confirm with the user whether to continue using the existing branch or create a new one, violating the project guideline: "การปรับปรุงเนื้อหา แก้ไข หรือเพิ่มเติมเนื้อหาใดๆ ให้ใช้ branch เดิมก่อนเสมอ... หากไม่มี branch ที่เกี่ยวข้องเลย ให้ถามก่อนเสมอว่าต้องการสร้าง branch ใหม่ได้ไหม".
 - **Resolution:** Updated the plan to explicitly state that changes will be submitted to the current branch (`jules-11824527717297540046-67591e1f`) and requested user approval before proceeding.
 - **Future Prevention:** Always proactively address branch strategy in the initial plan proposal, ensuring compliance with the rule to reuse branches or ask for permission to create new ones.
+
+## Log: เอาฟีเจอร์ธีมสีของโพสต์ออกเพื่อรองรับ Dark/Light Mode ของฟอรั่ม
+
+**Issue:**
+- ธีมสีที่สร้างสำหรับโพสต์ (Post Color Theme) เมื่อนำไปใช้จริงในฟอรั่ม กลับกลายเป็นว่าอ่านยากหรือมองไม่เห็นในบางโหมด (Dark Mode หรือ Light Mode) เนื่องจากสีของข้อความและพื้นหลังที่ถูกกำหนดแบบเจาะจงมีความใกล้เคียงกับสีเริ่มต้นของฟอรั่ม
+
+**Detection:**
+- Human Error: ผู้ใช้งานเป็นคนสั่งงานและออกแบบให้มีฟีเจอร์การเลือกธีมสีแต่แรก โดยไม่ครอบคลุมถึงหรือไม่ได้นึกถึงระบบ Dark/Light Mode ที่มีอยู่แล้วในตัวฟอรั่ม ทำให้โค้ดที่สร้างขึ้นมามีการบังคับใช้สี `color: ...` และขอบสี ทำให้เกิดปัญหาเวลาตั้งค่าสีสว่างในโหมดสว่าง หรือสีมืดในโหมดมืด
+
+**Root Cause:**
+- การกำหนดสีในแอตทริบิวต์ `style` (Inline CSS) ทำให้สีนั้นถูกบังคับใช้ (hardcoded) เสมอ ไม่ว่าฟอรั่มจะอยู่ในโหมดใด ส่งผลให้การตั้งค่าสีไม่ยืดหยุ่น
+
+**Resolution:**
+1. **ลบการตั้งค่าสีที่เจาะจงออก (Remove Custom Colors):** เอาช่องเลือก "Post Color Theme" ทั้งฝั่ง Worker และ Hiring ออกจาก UI ในไฟล์ `index.html`
+2. **แก้ไขโครงสร้าง HTML ที่สร้างขึ้น:**
+   - นำค่า `style="color: ..."` ออกทั้งหมดเพื่อให้เบราว์เซอร์และ CSS ของฟอรั่มใช้สีเริ่มต้น (text-color) แทน
+   - เปลี่ยนขอบ (`border`) ที่เคยใช้สีตามธีม ให้ใช้สีที่เป็นกลาง เช่น `#ccc` ซึ่งจะยังคงมองเห็นโครงสร้างแบบ Card ได้ทั้งโหมดสว่างและมืด
+   - ปรับแก้สีพื้นหลังและสีปุ่มต่างๆ ไม่ให้อิงกับ `themeColor` อีกต่อไป (ใช้สีกลางแทน หรือสีเริ่มต้นแทน)
+3. **ปรับแก้การบันทึกข้อมูล (LocalStorage):** ลบ `w-post-theme` และ `h-post-theme` ออกจาก array `INPUT_IDS` ทำให้ไม่มีการจำค่านี้อีกต่อไป
+
+**Prevention/Future Mitigation:**
+- ในการสร้างโค้ด HTML ที่จะนำไปแปะในเว็บไซต์ภายนอก (เช่น ฟอรั่ม) ควรพิจารณาถึงสภาพแวดล้อมและ CSS ของเว็บนั้นๆ ด้วย แนะนำให้หลีกเลี่ยงการเจาะจงสีพื้นหลังหรือสีข้อความ หากเว็บนั้นมีระบบ Dark/Light mode เป็นของตัวเอง เพื่อป้องกันปัญหาการอ่านข้อความไม่ได้

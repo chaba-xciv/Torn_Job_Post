@@ -199,7 +199,7 @@
         }
         .data-table th, .data-table td { border: 1px solid var(--border); padding: 4px; text-align: left; font-size: 0.8rem; }
         .data-table th {
-            background-color: var(--primary);
+            background-color: #3b5998;
             color: white;
             cursor: pointer;
             position: sticky;
@@ -375,16 +375,6 @@
 
                 <div class="form-grid" style="margin-top: 15px;">
                     <div class="input-group">
-                        <label>Post Color Theme</label>
-                        <select id="w-post-theme" onchange="generateWorkerHTML()">
-                            <option value="#333333">Default (Dark Grey)</option>
-                            <option value="#3b5998">Torn Blue</option>
-                            <option value="#2e7d32">Green</option>
-                            <option value="#c62828">Red</option>
-                            <option value="#6a1b9a">Purple</option>
-                            <option value="#e65100">Orange</option>
-                        </select>
-                    </div>
                 </div>
                 <div class="form-grid" style="margin-top: 15px;">
                     <div class="input-group">
@@ -495,16 +485,6 @@
 
                 <div class="form-grid" style="margin-top: 15px;">
                     <div class="input-group">
-                        <label>Post Color Theme</label>
-                        <select id="h-post-theme" onchange="generateHiringHTML()">
-                            <option value="#333333">Default (Dark Grey)</option>
-                            <option value="#3b5998">Torn Blue</option>
-                            <option value="#2e7d32">Green</option>
-                            <option value="#c62828">Red</option>
-                            <option value="#6a1b9a">Purple</option>
-                            <option value="#e65100">Orange</option>
-                        </select>
-                    </div>
                 </div>
 
                 <div class="form-grid" style="margin-top: 15px;">
@@ -785,7 +765,7 @@
         let jobListHTML = "";
 
         if(checkedBoxes.length > 0) {
-            jobListHTML = `<strong style="color: ${document.getElementById('w-post-theme') ? document.getElementById('w-post-theme').value : '#333333'};">🎯 Target Positions & My Expected Eff:</strong><ul style="margin-top: 5px; margin-bottom: 0;">`;
+            jobListHTML = `<strong>🎯 Target Positions & My Expected Eff:</strong><ul style="margin-top: 5px; margin-bottom: 0;">`;
             checkedBoxes.forEach(cb => {
                 const [comp, pos, eff] = cb.value.split('|');
                 let meritStr = merit > 0 ? ` + ${merit}% merit` : "";
@@ -799,27 +779,25 @@
         const notes = document.getElementById('w-notes').value;
         const formattedNotes = notes.replace(/\n/g, "<br>");
 
-        const themeColor = document.getElementById('w-post-theme') ? document.getElementById('w-post-theme').value : '#333333';
-
-        const htmlCode = `<div style="border: 2px solid ${themeColor}; border-radius: 8px; padding: 10px; max-width: 600px; font-family: Arial, sans-serif; background-color: transparent;">
-    <h2 style="color: ${themeColor}; margin-top: 0; border-bottom: 2px solid ${themeColor}; padding-bottom: 5px;">Looking for a Job</h2>
+        const htmlCode = `<div style="border: 2px solid #ccc; border-radius: 8px; padding: 10px; max-width: 600px; font-family: Arial, sans-serif; background-color: transparent;">
+    <h2 style="margin-top: 0; border-bottom: 2px solid #ccc; padding-bottom: 5px;">Looking for a Job</h2>
     <div style="margin-bottom: 10px;">
-        <strong style="color: ${themeColor};">📊 My Base Stats:</strong><br>
+        <strong>📊 My Base Stats:</strong><br>
         • MAN: ${Number(man).toLocaleString()}<br>
         • INT: ${Number(int).toLocaleString()}<br>
         • END: ${Number(end).toLocaleString()}<br>
     </div>
     <div style="margin-bottom: 10px;">
-        <strong style="color: ${themeColor};">⭐ Merits:</strong> ${merit}/10 Employee Stats<br>
+        <strong>⭐ Merits:</strong> ${merit}/10 Employee Stats<br>
     </div>
     <div style="margin-bottom: 10px;">
-        <strong style="color: ${themeColor};">💼 Work Style:</strong> ${workStyleText}
+        <strong>💼 Work Style:</strong> ${workStyleText}
     </div>
     <div style="margin-bottom: 10px;">
         ${jobListHTML}
     </div>
-    ${notes ? `<div style="margin-top: 15px; padding: 5px; background-color: rgba(0,0,0,0.05); border-left: 4px solid ${themeColor};">
-        <strong style="color: ${themeColor};">💬 Notes:</strong><br>${formattedNotes}
+    ${notes ? `<div style="margin-top: 15px; padding: 5px; background-color: rgba(0,0,0,0.05); border-left: 4px solid #ccc;">
+        <strong>💬 Notes:</strong><br>${formattedNotes}
     </div>` : ''}
 </div>`;
 
@@ -849,7 +827,7 @@
 
             if (unlockedSpecials.length > 0) {
                 companyPerksHTML = `<div style="margin-bottom: 10px;">
-        <strong style="color: ${document.getElementById('h-post-theme') ? document.getElementById('h-post-theme').value : '#333333'};">✨ Company Perks (${stars}⭐):</strong>
+        <strong>✨ Company Perks (${stars}⭐):</strong>
         <ul style="margin-top: 5px; margin-bottom: 0;">`;
                 unlockedSpecials.forEach(special => {
                     const costText = special.is_passive ? "Passive" : `${special.cost} JP`;
@@ -875,30 +853,28 @@
 
         const formattedPerks = perks.replace(/\n/g, "<br>");
 
-        const themeColor = document.getElementById('h-post-theme') ? document.getElementById('h-post-theme').value : '#333333';
-
-        const htmlCode = `<div style="border: 2px solid ${themeColor}; border-radius: 8px; padding: 10px; max-width: 600px; font-family: Arial, sans-serif; background-color: transparent;">
-    <h2 style="color: ${themeColor}; margin-top: 0; border-bottom: 2px solid ${themeColor}; padding-bottom: 5px;">🏢 Hiring: ${comp} ${stars > 0 ? `(${stars}⭐)` : ''}</h2>
+        const htmlCode = `<div style="border: 2px solid #ccc; border-radius: 8px; padding: 10px; max-width: 600px; font-family: Arial, sans-serif; background-color: transparent;">
+    <h2 style="margin-top: 0; border-bottom: 2px solid #ccc; padding-bottom: 5px;">🏢 Hiring: ${comp} ${stars > 0 ? `(${stars}⭐)` : ''}</h2>
     <p>We are currently looking for dedicated workers to join our team!</p>
 
     <div style="margin-bottom: 10px;">
-        <strong style="color: ${themeColor};">🎯 Target Efficiency:</strong> <b>${eff} Eff</b><br>
+        <strong>🎯 Target Efficiency:</strong> <b>${eff} Eff</b><br>
     </div>
     <div style="margin-bottom: 10px;">
-        <strong style="color: ${themeColor};">💼 Work Style:</strong> ${workStyleText}<br>
+        <strong>💼 Work Style:</strong> ${workStyleText}<br>
     </div>
     <div style="margin-bottom: 10px;">
-        <strong style="color: ${themeColor};">📌 Positions Open:</strong><br>
+        <strong>📌 Positions Open:</strong><br>
         ${positionsHTML}
     </div>
     ${companyPerksHTML}
-    ${formattedPerks ? `<div style="margin-top: 15px; padding: 5px; background-color: rgba(0,0,0,0.05); border-left: 4px solid ${themeColor};">
-        <strong style="color: ${themeColor};">💰 What we offer / Details:</strong><br>${formattedPerks}
+    ${formattedPerks ? `<div style="margin-top: 15px; padding: 5px; background-color: rgba(0,0,0,0.05); border-left: 4px solid #ccc;">
+        <strong>💰 What we offer / Details:</strong><br>${formattedPerks}
     </div>` : ''}
 
     <p style="margin-top: 15px;">If you meet the requirements, please PM me or apply directly!</p>
     ${link ? `<div style="text-align: center; margin-top: 10px;">
-        <a href="${link}" style="background-color: ${themeColor}; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">👉 Apply Here 👈</a>
+        <a href="${link}" style="background-color: #3b5998; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">👉 Apply Here 👈</a>
     </div>` : ''}
 </div>`;
 
@@ -921,8 +897,8 @@
 
     // --- LocalStorage Logic ---
     const INPUT_IDS = [
-        'w-man', 'w-int', 'w-end', 'w-merit', 'w-notes', 'w-post-theme',
-        'h-eff', 'h-link', 'h-perks', 'h-post-theme', 'h-stars'
+        'w-man', 'w-int', 'w-end', 'w-merit', 'w-notes',
+        'h-eff', 'h-link', 'h-perks', 'h-stars'
     ]; // h-company loaded later
 
     function saveData() {
