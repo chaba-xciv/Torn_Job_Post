@@ -4,1025 +4,554 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Torn City - Forum Post Builder</title>
+    <!-- Tailwind & FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            corePlugins: { preflight: false },
-            theme: {
-                extend: {
-                    colors: {
-                        'theme-card': 'var(--card-bg)',
-                        'theme-border': 'var(--border)',
-                        'theme-text-muted': 'var(--text-muted)'
-                    }
-                }
-            }
-        }
-    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
         :root {
-            --bg-color: #f0f2f5;
+            --bg-color: #f8fafc;
             --card-bg: #ffffff;
-            --text-main: #333333;
-            --text-muted: #666666;
-            --primary: #3b5998;
-            --primary-hover: #2d4373;
-            --border: #cccccc;
-            --highlight: #e7f3ff;
-            --danger: #d32f2f;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --border: #e2e8f0;
+            --highlight: #f1f5f9;
         }
 
         body.dark-theme {
-            --bg-color: #18191a;
-            --card-bg: #242526;
-            --text-main: #e4e6eb;
-            --text-muted: #b0b3b8;
-            --primary: #4e8cff;
-            --primary-hover: #3b71d6;
-            --border: #3e4042;
-            --highlight: #3a3b3c;
-        }
-
-        /* Default dark theme if preferred by OS */
-        @media (prefers-color-scheme: dark) {
-            body:not(.light-theme) {
-                --bg-color: #18191a;
-                --card-bg: #242526;
-                --text-main: #e4e6eb;
-                --text-muted: #b0b3b8;
-                --primary: #4e8cff;
-                --primary-hover: #3b71d6;
-                --border: #3e4042;
-                --highlight: #3a3b3c;
-            }
-        }
-
-        .header-top {
-            position: relative;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+            --border: #334155;
+            --highlight: #1e293b;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            margin: 0;
-            padding: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
+            transition: all 0.2s ease;
         }
 
-        .container {
+        /* ป้องกันตารางดันขอบ */
+        .table-responsive {
             width: 100%;
-            max-width: 1400px;
-            background: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            overflow: hidden;
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 10px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
-
-        .two-columns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .col-left, .col-right {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Responsive grid adjustments */
-        @media (max-width: 992px) {
-            .two-columns {
-                grid-template-columns: 1fr; /* Fallback to 1 column on smaller screens */
-            }
-        }
-
-        @media (max-width: 600px) {
-            body { padding: 0; }
-            .container { border-radius: 0; border: none; box-shadow: none; margin-bottom: 0; }
-            .tabs { flex-direction: row; }
-            .tab { padding: 10px 5px; font-size: 0.8rem; }
-            .form-grid { grid-template-columns: 1fr; gap: 8px; }
-            .table-container { max-height: 300px; border-radius: 0; border-left: none; border-right: none; }
-            .data-table th, .data-table td { padding: 4px; font-size: 0.75rem; }
-            .content { padding: 10px; }
-            button { padding: 8px; font-size: 0.85rem; }
-        }
-
-        .header { background: var(--primary); color: white; padding: 10px; text-align: center; }
-
-        .header h1 { margin: 0; font-size: 1.25rem; }
-
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border);
-            background: var(--card-bg);
-        }
-
-        .tab { flex: 1; padding: 8px; text-align: center; cursor: pointer; font-weight: 600; color: var(--text-muted); transition: 0.3s; font-size: 0.9rem; }
-
-        .tab:hover { background: var(--highlight); }
-        .tab.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
-
-        .content { padding: 15px; display: none; }
-        .content.active { display: block; }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .input-group label { display: block; margin-bottom: 2px; font-size: 0.8rem; font-weight: 600; }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 5px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            background: var(--bg-color);
-            color: var(--text-main);
-            box-sizing: border-box;
-            font-family: inherit;
-        }
-
-        button { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: background 0.2s, transform 0.1s; width: 100%; margin-top: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); } button:active { transform: translateY(1px); }
-
-        button:hover { background: var(--primary-hover); }
-        button.add-btn { background: #2e7d32; }
-        button.add-btn:hover { background: #1b5e20; }
-        button.remove-btn { background: var(--danger); padding: 5px 10px; width: auto; margin: 0; font-size: 0.8rem;}
-
-        .basket {
-            margin-top: 10px;
-            padding: 10px;
-            border: 1px dashed var(--border);
-            border-radius: 6px;
-            background: var(--highlight);
-        }
-
-        .basket-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .basket-item:last-child { border-bottom: none; }
-
-        .hiring-result {
-            margin-top: 10px;
-            padding: 10px;
-            background: rgba(59, 130, 246, 0.1);
-            border-radius: 6px;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            text-align: center;
-        }
-        .hiring-result strong { font-size: 1.2rem; display: block; margin-top: 10px; color: var(--primary); }
-
 
         .data-table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 0.9rem;
+            min-width: 600px; /* บังคับ Scroll แนวนอนถ้าจอแคบเกินไป */
         }
-        .data-table th, .data-table td { border: 1px solid var(--border); padding: 4px; text-align: left; font-size: 0.8rem; }
+
         .data-table th {
-            background-color: #3b5998;
+            background-color: var(--primary);
             color: white;
-            cursor: pointer;
             position: sticky;
             top: 0;
+            z-index: 10;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 10px;
         }
-        .data-table th:hover {
-            background-color: var(--primary-hover);
+
+        .data-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
         }
-        .table-container {
+
+        /* ปรับความสูง Scrollbar */
+        .custom-scroll {
             max-height: 400px;
             overflow-y: auto;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-        }
-        .tooltip {
-            position: relative;
-            display: inline-block;
-            cursor: help;
-            border-bottom: 1px dotted var(--text-muted);
-        }
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 200px;
-            background-color: #555;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 0.8rem;
-            font-weight: normal;
-        }
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
-        .filters {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        .filters input {
-            flex: 1;
-        }
-        .work-style-options {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-        .work-style-option {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .work-style-option input[type="radio"] {
-            width: auto;
-        }
-        .html-box { margin-top: 10px; }
-        .html-box textarea { height: 200px; resize: vertical; }
-
-        .preview-box {
-            margin-top: 15px;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            background: var(--card-bg);
-            /* To simulate Torn forum background which can be light/dark based on user setting,
-               but we let it inherit the card-bg so they can see how it looks in their current theme */
-        }
-        .preview-title {
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-            text-transform: uppercase;
         }
 
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 
+        .tab-active {
+            color: var(--primary) !important;
+            border-bottom: 3px solid var(--primary);
+            background-color: var(--highlight);
+        }
+
+        /* Glassmorphism for floating controls */
+        .floating-ui {
+            background: rgba(var(--card-bg), 0.8);
+            backdrop-filter: blur(8px);
+        }
+
+        input, select, textarea {
+            background-color: var(--card-bg) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--border) !important;
+        }
+
+        .preview-area {
+            background-color: #ffffff; /* บังคับเป็นสีขาวเลียนแบบฟอรั่ม */
+            color: #333333;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
-<body>
+<body class="min-h-screen">
 
-<div class="container w-full max-w-7xl bg-theme-card rounded-lg shadow-sm border border-theme-border flex flex-col mb-4">
-    <!-- Floating Controls (Fixed top right) -->
-    <div class="fixed top-4 right-4 z-50 flex flex-col items-end gap-2">
-        <div class="flex gap-2 bg-theme-card/80 backdrop-blur-sm p-1.5 rounded-full shadow-sm border border-theme-border">
-            <button onclick="clearData()" class="w-8 h-8 rounded-full flex items-center justify-center text-red-500 hover:text-red-600 transition-colors" title="Clear all saved data">
-                <i class="fa-solid fa-trash text-sm"></i>
-            </button>
-            <div class="w-px h-6 bg-theme-border self-center mx-1"></div>
-            <button onclick="setTheme('light')" id="themeBtn-light" class="w-8 h-8 rounded-full flex items-center justify-center text-theme-text-muted hover:text-yellow-500 transition-colors" title="Light Theme">
-                <i class="fa-solid fa-sun text-sm"></i>
-            </button>
-            <button onclick="setTheme('dark')" id="themeBtn-dark" class="w-8 h-8 rounded-full flex items-center justify-center text-theme-text-muted hover:text-indigo-400 transition-colors" title="Dark Theme">
-                <i class="fa-solid fa-moon text-sm"></i>
-            </button>
-        </div>
-        <div class="text-xs text-theme-text-muted bg-theme-card/70 backdrop-blur-sm px-2.5 py-1 rounded-md border border-theme-border shadow-sm">
-            Dev by <span class="font-bold" style="color: var(--primary);">Jules AI</span> |
-            <a href="https://github.com/chaba-xciv/Torn_Job_Post" target="_blank" class="font-bold" style="color: var(--primary); text-decoration: none;">GitHub</a>
-        </div>
+    <!-- Floating UI -->
+    <div class="fixed top-4 right-4 z-50 flex items-center gap-2 p-1.5 bg-white/90 dark:bg-gray-800/90 shadow-2xl rounded-full border border-gray-200 dark:border-gray-700">
+        <button onclick="clearData()" class="w-8 h-8 rounded-full flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors" title="Clear Data">
+            <i class="fa-solid fa-trash-can text-sm"></i>
+        </button>
+        <div class="w-px h-5 bg-gray-300 dark:bg-gray-600"></div>
+        <button onclick="setTheme('light')" id="themeBtn-light" class="w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+            <i class="fa-solid fa-sun text-sm"></i>
+        </button>
+        <button onclick="setTheme('dark')" id="themeBtn-dark" class="w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+            <i class="fa-solid fa-moon text-sm"></i>
+        </button>
     </div>
 
-    <div class="header header-top bg-primary text-white py-3 px-4 text-center">
-        <h1>Torn City - Forum Post Builder</h1>
-    </div>
+    <div class="max-w-[1400px] mx-auto px-4 py-6">
+        <!-- Header -->
+        <header class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-black tracking-tight text-blue-600 dark:text-blue-400 uppercase">Torn Forum Builder</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Generate professional job & recruitment posts</p>
+            </div>
+        </header>
 
-    <div class="tabs flex border-b border-theme-border bg-theme-card">
-        <div class="tab active flex-1 py-2 px-3 text-center cursor-pointer font-semibold text-theme-text-muted hover:bg-theme-highlight transition-colors text-sm" onclick="switchTab('worker', event)">Find a Job (Worker)</div>
-        <div class="tab flex-1 py-2 px-3 text-center cursor-pointer font-semibold text-theme-text-muted hover:bg-theme-highlight transition-colors text-sm" onclick="switchTab('hiring', event)">Hire Employees (Hiring)</div>
-    </div>
+        <!-- Main Dashboard -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <!-- Navigation -->
+            <nav class="flex border-b border-gray-200 dark:border-gray-700">
+                <button onclick="switchTab('worker')" id="tab-worker" class="flex-1 py-4 font-bold text-sm uppercase tracking-widest transition-all tab-active">
+                    <i class="fa-solid fa-user-tag mr-2"></i>Worker Stats
+                </button>
+                <button onclick="switchTab('hiring')" id="tab-hiring" class="flex-1 py-4 font-bold text-sm uppercase tracking-widest transition-all text-gray-400">
+                    <i class="fa-solid fa-briefcase mr-2"></i>Employer/Hiring
+                </button>
+            </nav>
 
-    <div id="worker-tab" class="content active">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <!-- Left Column: Inputs -->
-            <div class="col-left">
-                <h3 class="text-base font-semibold mb-2 mt-0 text-theme-text-main">1. Enter Your Stats</h3>
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>Manual Labor (MAN)</label>
-                        <input type="number" id="w-man" value="0" min="0" oninput="renderWorkerTable()">
+            <!-- Content -->
+            <div class="p-4 md:p-6">
+                <!-- Worker Section -->
+                <div id="worker-content" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Left: Form -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <div class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl space-y-4 border border-gray-100 dark:border-gray-800">
+                            <h3 class="font-bold text-blue-600 uppercase text-xs tracking-widest">1. Your Statistics</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase">Manual</label>
+                                    <input type="number" id="w-man" value="0" oninput="renderWorkerTable()" class="w-full p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase">Intelligence</label>
+                                    <input type="number" id="w-int" value="0" oninput="renderWorkerTable()" class="w-full p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase">Endurance</label>
+                                    <input type="number" id="w-end" value="0" oninput="renderWorkerTable()" class="w-full p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase">Merits (Stats)</label>
+                                    <select id="w-merit" onchange="renderWorkerTable()" class="w-full p-2 rounded-lg text-sm outline-none">
+                                        <option value="0">0/10 (+0%)</option>
+                                        <script>for(let i=1;i<=10;i++) document.write(`<option value="${i}">${i}/10 (+${i}%)</option>`)</script>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
+                            <h3 class="font-bold text-blue-600 uppercase text-xs tracking-widest mb-3">2. Work Preference</h3>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <label class="flex-1 flex items-center justify-center gap-2 cursor-pointer bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700">
+                                    <input type="radio" name="w-style" value="salary" checked> <span class="text-xs">Salary</span>
+                                </label>
+                                <label class="flex-1 flex items-center justify-center gap-2 cursor-pointer bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700">
+                                    <input type="radio" name="w-style" value="tax"> <span class="text-xs">Pay Tax</span>
+                                </label>
+                                <label class="flex-1 flex items-center justify-center gap-2 cursor-pointer bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700">
+                                    <input type="radio" name="w-style" value="unpaid"> <span class="text-xs">Free</span>
+                                </label>
+                            </div>
+                            <textarea id="w-notes" rows="2" class="w-full p-2 rounded-lg text-sm outline-none" placeholder="Add custom notes..."></textarea>
+                        </div>
+
+                        <button onclick="generateWorkerHTML()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl shadow-xl transition-all uppercase tracking-tighter">
+                            Generate HTML Post
+                        </button>
                     </div>
-                    <div class="input-group">
-                        <label>Intelligence (INT)</label>
-                        <input type="number" id="w-int" value="0" min="0" oninput="renderWorkerTable()">
-                    </div>
-                    <div class="input-group">
-                        <label>Endurance (END)</label>
-                        <input type="number" id="w-end" value="0" min="0" oninput="renderWorkerTable()">
-                    </div>
-                    <div class="input-group">
-                        <label>Employee Merits (+1% per upgrade)</label>
-                        <select id="w-merit" onchange="renderWorkerTable()">
-                            <option value="0">0/10 (0%)</option>
-                            <option value="1">1/10 (+1%)</option>
-                            <option value="2">2/10 (+2%)</option>
-                            <option value="3">3/10 (+3%)</option>
-                            <option value="4">4/10 (+4%)</option>
-                            <option value="5">5/10 (+5%)</option>
-                            <option value="6">6/10 (+6%)</option>
-                            <option value="7">7/10 (+7%)</option>
-                            <option value="8">8/10 (+8%)</option>
-                            <option value="9">9/10 (+9%)</option>
-                            <option value="10">10/10 (+10%)</option>
-                        </select>
+
+                    <!-- Right: Table & Results -->
+                    <div class="lg:col-span-8 space-y-4 min-w-0"> <!-- min-w-0 ช่วยแก้ปัญหา Grid ล้นขอบ -->
+                        <div class="flex gap-2">
+                            <input type="text" id="w-filter-company" oninput="renderWorkerTable()" class="flex-1 p-2 rounded-lg text-sm border" placeholder="Filter Company...">
+                            <input type="text" id="w-filter-position" oninput="renderWorkerTable()" class="flex-1 p-2 rounded-lg text-sm border" placeholder="Filter Position...">
+                        </div>
+
+                        <div class="table-responsive border border-gray-200 dark:border-gray-700 rounded-xl custom-scroll">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;">Select</th>
+                                        <th onclick="sortWorkerTable('c')" class="cursor-pointer">Company ↕</th>
+                                        <th>Position</th>
+                                        <th>Recommended Stats</th>
+                                        <th onclick="sortWorkerTable('eff')" class="cursor-pointer">Your Eff ↕</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="worker-table-body"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase">HTML Forum Code</label>
+                                <textarea id="w-html" readonly class="w-full h-32 p-2 text-[10px] font-mono rounded-lg bg-gray-50 dark:bg-gray-900 border" placeholder="Code will appear here..."></textarea>
+                                <button onclick="copyToClipboard('w-html')" class="w-full bg-emerald-600 text-white text-xs font-bold py-2 rounded-lg transition-colors">Copy Code</button>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase">Live Preview</label>
+                                <div id="w-preview" class="preview-area w-full h-32 p-3 rounded-lg overflow-auto text-xs"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+                <!-- Hiring Section -->
+                <div id="hiring-content" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Left: Form -->
+                    <div class="lg:col-span-4 space-y-4">
+                        <div class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl space-y-3 border border-gray-100 dark:border-gray-800">
+                            <h3 class="font-bold text-blue-600 uppercase text-xs tracking-widest">1. Company Info</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase">Company Type</label>
+                                    <select id="h-company" onchange="renderHiringTable()" class="w-full p-2 rounded-lg text-sm outline-none"></select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="text-[10px] font-bold text-gray-400 uppercase">Stars</label>
+                                        <select id="h-stars" class="w-full p-2 rounded-lg text-sm outline-none">
+                                            <script>for(let i=0;i<=10;i++) document.write(`<option value="${i}">${i} ⭐</option>`)</script>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] font-bold text-gray-400 uppercase">Target Eff (%)</label>
+                                        <input type="number" id="h-eff" value="100" class="w-full p-2 rounded-lg text-sm outline-none">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase">Application Link</label>
+                                    <input type="text" id="h-link" class="w-full p-2 rounded-lg text-sm outline-none" placeholder="https://www.torn.com/...">
+                                </div>
+                            </div>
+                        </div>
 
-                <h3 class="text-base font-semibold mb-2 mt-0 text-theme-text-main">2. Work Style</h3>
-                <div class="work-style-options">
-                    <label class="work-style-option tooltip">
-                        <input type="radio" name="w-style" value="salary" checked> Receive Salary
-                        <span class="tooltiptext">You expect to be paid because your high efficiency benefits the company.</span>
-                    </label>
-                    <label class="work-style-option tooltip">
-                        <input type="radio" name="w-style" value="tax"> Pay Tax
-                        <span class="tooltiptext">You will pay the company daily to work there, usually because you have low stats but want the company perks/specials.</span>
-                    </label>
-                    <label class="work-style-option tooltip">
-                        <input type="radio" name="w-style" value="unpaid"> Unpaid (Free)
-                        <span class="tooltiptext">Mutual benefit: you work for free to get company perks, and the company gets your efficiency for free.</span>
-                    </label>
-                </div>
+                        <div class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
+                            <h3 class="font-bold text-blue-600 uppercase text-xs tracking-widest mb-3">2. Work Style & Offer</h3>
+                            <div class="flex gap-2 mb-3">
+                                <label class="flex-1 flex items-center justify-center gap-1 cursor-pointer bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700">
+                                    <input type="radio" name="h-style" value="paying" checked> <span class="text-[10px]">Salary</span>
+                                </label>
+                                <label class="flex-1 flex items-center justify-center gap-1 cursor-pointer bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700">
+                                    <input type="radio" name="h-style" value="taxing"> <span class="text-[10px]">Tax</span>
+                                </label>
+                            </div>
+                            <textarea id="h-perks" rows="2" class="w-full p-2 rounded-lg text-sm outline-none" placeholder="Trains, pay details..."></textarea>
+                        </div>
 
-                <div class="form-grid" style="margin-top: 15px;">
-                    <div class="input-group">
-                </div>
-                <div class="form-grid" style="margin-top: 15px;">
-                    <div class="input-group">
-                        <label>Additional Notes</label>
-                        <textarea id="w-notes" placeholder="Enter any extra notes for the employers..." rows="3"></textarea>
+                        <button onclick="generateHiringHTML()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl uppercase tracking-tighter">
+                            Generate Recruitment Post
+                        </button>
+                    </div>
+
+                    <!-- Right: Table & Results -->
+                    <div class="lg:col-span-8 space-y-4 min-w-0">
+                        <div class="table-responsive border border-gray-200 dark:border-gray-700 rounded-xl custom-scroll">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;">Select</th>
+                                        <th>Position</th>
+                                        <th>Required Stats for <span id="target-eff-display" class="underline">100</span>% Eff</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="hiring-table-body"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase">HTML Forum Code</label>
+                                <textarea id="h-html" readonly class="w-full h-32 p-2 text-[10px] font-mono rounded-lg bg-gray-50 dark:bg-gray-900 border"></textarea>
+                                <button onclick="copyToClipboard('h-html')" class="w-full bg-emerald-600 text-white text-xs font-bold py-2 rounded-lg">Copy Code</button>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-gray-400 uppercase">Live Preview</label>
+                                <div id="h-preview" class="preview-area w-full h-32 p-3 rounded-lg overflow-auto text-xs"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <button onclick="generateWorkerHTML()" style="margin-top: 10px;">Generate HTML Code for Forum Post</button>
             </div>
 
-            <!-- Right Column: Outputs -->
-            <div class="col-right">
-                <h3 class="text-base font-semibold mb-2 mt-0 text-theme-text-main">3. Filter and Select Jobs</h3>
-                <div class="filters">
-                    <input type="text" id="w-filter-company" placeholder="Filter/Exclude Company (e.g. -Farm)" oninput="renderWorkerTable()">
-                    <input type="text" id="w-filter-position" placeholder="Filter Position" oninput="renderWorkerTable()">
-                </div>
-
-                <div class="table-container">
-                    <table class="data-table" id="worker-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 40px; text-align: center;">Select</th>
-                                <th onclick="sortWorkerTable('c')">Company ↕</th>
-                                <th onclick="sortWorkerTable('p')">Position ↕</th>
-                                <th>Recommended Stats</th>
-                                <th onclick="sortWorkerTable('eff')">Eff ↕</th>
-                            </tr>
-                        </thead>
-                        <tbody id="worker-table-body">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="html-box">
-                    <textarea id="w-html" readonly placeholder="HTML Code will appear here..."></textarea>
-                    <button onclick="copyToClipboard('w-html')" style="background: #4caf50;">Copy HTML Code</button>
-                </div>
-
-                <div class="preview-title" style="margin-top: 10px;">Live Preview</div>
-                <div id="w-preview" class="preview-box">
-                    <i>Preview will appear here...</i>
-                </div>
-            </div>
+            <!-- Footer -->
+            <footer class="bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 p-4 text-center">
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">
+                    Dev by <span class="text-blue-500">Jules AI</span> | <a href="https://github.com/chaba-xciv/Torn_Job_Post" class="hover:underline">GitHub</a>
+                </p>
+            </footer>
         </div>
     </div>
 
-    <div id="hiring-tab" class="content">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <!-- Left Column: Inputs -->
-            <div class="col-left">
-                <h3 class="text-base font-semibold mb-2 mt-0 text-theme-text-main">1. Setup Hiring Requirements</h3>
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>Company</label>
-                        <select id="h-company" onchange="renderHiringTable()"></select>
-                    </div>
-                    <div class="input-group">
-                        <label>Company Stars</label>
-                        <select id="h-stars" onchange="generateHiringHTML()">
-                            <option value="0">0 ⭐</option>
-                            <option value="1">1 ⭐</option>
-                            <option value="2">2 ⭐</option>
-                            <option value="3">3 ⭐</option>
-                            <option value="4">4 ⭐</option>
-                            <option value="5">5 ⭐</option>
-                            <option value="6">6 ⭐</option>
-                            <option value="7">7 ⭐</option>
-                            <option value="8">8 ⭐</option>
-                            <option value="9">9 ⭐</option>
-                            <option value="10">10 ⭐</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label class="tooltip">Target Eff
-                            <span class="tooltiptext">The efficiency you want the employee to have.</span>
-                        </label>
-                        <input type="number" id="h-eff" value="110" oninput="renderHiringTable()">
-                    </div>
-                </div>
+    <!-- Scripts -->
+    <script src="company_specials.js"></script>
+    <script src="company_positions.js"></script>
+    <script>
+        let jobsDB = [];
+        let currentSort = { column: 'eff', asc: false };
 
-                <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
-
-                <h3 class="text-base font-semibold mb-2 mt-0 text-theme-text-main">2. Offer & Work Style</h3>
-                <div class="work-style-options">
-                    <label class="work-style-option tooltip">
-                        <input type="radio" name="h-style" value="paying" checked> Paying Salary
-                        <span class="tooltiptext">You will pay the employee a daily salary for their high efficiency.</span>
-                    </label>
-                    <label class="work-style-option tooltip">
-                        <input type="radio" name="h-style" value="taxing"> Requiring Tax
-                        <span class="tooltiptext">The employee must pay you daily to work here and receive perks.</span>
-                    </label>
-                    <label class="work-style-option tooltip">
-                        <input type="radio" name="h-style" value="unpaid"> Unpaid (Free)
-                        <span class="tooltiptext">Mutual benefit: they work for free, you get their efficiency for free.</span>
-                    </label>
-                </div>
-
-                <div class="form-grid" style="margin-top: 15px;">
-                    <div class="input-group">
-                        <label>Company Link</label>
-                        <input type="text" id="h-link" placeholder="e.g. https://www.torn.com/joblist.php?step=corpinfo&ID=12345">
-                    </div>
-                </div>
-
-                <div class="form-grid" style="margin-top: 15px;">
-                    <div class="input-group">
-                </div>
-
-                <div class="form-grid" style="margin-top: 15px;">
-                    <div class="input-group">
-                        <label>Perks / Pay Details</label>
-                        <textarea id="h-perks" placeholder="e.g. 1m/day, rotating trains..." rows="3"></textarea>
-                    </div>
-                </div>
-
-                <button onclick="generateHiringHTML()" style="margin-top: 10px;">Generate HTML Code for Hiring Post</button>
-            </div>
-
-            <!-- Right Column: Outputs -->
-            <div class="col-right">
-                <h3 class="text-base font-semibold mb-2 mt-0 text-theme-text-main">3. Filter and Select Positions</h3>
-                <div class="table-container">
-                    <table class="data-table" id="hiring-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 40px; text-align: center;">Select</th>
-                                <th>Position</th>
-                                <th>Base Recommended Stats</th>
-                                <th>Required Stats (Calculated)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="hiring-table-body">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="html-box">
-                    <textarea id="h-html" readonly placeholder="HTML Code will appear here..."></textarea>
-                    <button onclick="copyToClipboard('h-html')" style="background: #4caf50;">Copy HTML Code</button>
-                </div>
-
-                <div class="preview-title" style="margin-top: 10px;">Live Preview</div>
-                <div id="h-preview" class="preview-box">
-                    <i>Preview will appear here...</i>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="company_specials.js"></script>
-<script src="company_positions.js"></script>
-<script>
-    // Database covers most companies in Torn
-    let jobsDB = [];
-
-    function generateJobsDB() {
-        jobsDB = [];
-        for (const company in window.TORN_COMPANY_POSITIONS) {
-            const positions = window.TORN_COMPANY_POSITIONS[company];
-            positions.forEach(pos => {
-                const stats = pos.recommended_stats;
-                const statEntries = Object.entries(stats).sort((a, b) => b[1] - a[1]);
-
-                let pType = statEntries[0][0].toLowerCase();
-                let pReq = statEntries[0][1];
-                let sType = statEntries[1][0].toLowerCase();
-                let sReq = statEntries[1][1];
-
-                if (pReq === 0) {
-                    pReq = 1; // Prevent division by zero if all stats are 0, though unlikely
-                }
-                if (sReq === 0) {
-                    // if secondary is 0, just use something else to avoid errors, or keep 0 and handle it
-                    sReq = 0;
-                }
-
-                jobsDB.push({
-                    c: company,
-                    p: pos.rank,
-                    reqP: pReq,
-                    typeP: pType,
-                    reqS: sReq,
-                    typeS: sType
-                });
-            });
-        }
-    }
-
-    let workerBasket = [];
-
-    // Get unique company names to populate dropdown
-    let currentSort = { column: 'eff', asc: false };
-
-    function initDropdowns() {
-        generateJobsDB();
-        const companies = [...new Set(jobsDB.map(job => job.c))].sort();
-
-        loadData();
-
-        const hCompany = document.getElementById('h-company');
-        if (hCompany) {
-            companies.forEach(comp => {
-                hCompany.add(new Option(comp, comp));
-            });
-
-            // Restore h-company specifically after options are added
-            const savedComp = localStorage.getItem('h-company');
-            if(savedComp && companies.includes(savedComp)) {
-                hCompany.value = savedComp;
-            }
-
+        function init() {
+            generateJobsDB();
+            populateDropdowns();
+            loadTheme();
+            loadData();
+            attachSaveListeners();
+            renderWorkerTable();
             renderHiringTable();
         }
 
-        renderWorkerTable();
-        attachSaveListeners();
-    }
-
-    function renderHiringTable() {
-        const tbody = document.getElementById('hiring-table-body');
-        if (!tbody) return;
-
-        const comp = document.getElementById('h-company').value;
-        const targetEff = parseFloat(document.getElementById('h-eff').value) || 0;
-
-        const positions = jobsDB.filter(job => job.c === comp);
-
-        // Keep checked state
-        const checkedBoxes = Array.from(document.querySelectorAll('.hiring-checkbox:checked')).map(cb => cb.value);
-
-        let html = '';
-        positions.forEach(job => {
-            let reqP_stat = 0, reqS_stat = 0;
-
-            if (targetEff > 90) {
-                let bonus = targetEff - 90;
-                let bonusPerSide = bonus / 2;
-                let multiplier = Math.pow(2, bonusPerSide / 5);
-                reqP_stat = Math.ceil(job.reqP * multiplier);
-                reqS_stat = Math.ceil(job.reqS * multiplier);
-            } else {
-                let effPerSide = targetEff / 2;
-                reqP_stat = Math.ceil((effPerSide / 45) * job.reqP);
-                reqS_stat = Math.ceil((effPerSide / 45) * job.reqS);
-            }
-
-            const reqText = `${reqP_stat.toLocaleString()} ${job.typeP.toUpperCase()} / ${reqS_stat.toLocaleString()} ${job.typeS.toUpperCase()}`;
-            const jobValue = `${job.p}|${reqText}`;
-            const isChecked = checkedBoxes.includes(jobValue) ? 'checked' : '';
-
-            html += `
-                <tr>
-                    <td style="text-align: center;"><input type="checkbox" class="hiring-checkbox" value="${jobValue}" ${isChecked}></td>
-                    <td>${job.p}</td>
-                    <td>${job.reqP.toLocaleString()} ${job.typeP.toUpperCase()} / ${job.reqS.toLocaleString()} ${job.typeS.toUpperCase()}</td>
-                    <td style="font-weight: bold; color: var(--primary);">${reqText}</td>
-                </tr>
-            `;
-        });
-        tbody.innerHTML = html;
-    }
-
-    function switchTab(tabId, evt) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-        if (evt) {
-            evt.currentTarget.classList.add('active');
-        } else if (typeof event !== 'undefined' && event) {
-            event.target.classList.add('active');
-        }
-        document.getElementById(tabId + '-tab').classList.add('active');
-    }
-
-    // Function to calculate Eff based on game formula
-    function getPartEff(stat, req) {
-        if (req <= 0 || stat <= 0) return 0;
-        const baseEff = Math.min(45, (45 / req) * stat);
-        const bonus = Math.max(0, 5 * Math.log2(stat / req));
-        return Math.floor(baseEff + bonus);
-    }
-
-
-    function sortWorkerTable(column) {
-        if (currentSort.column === column) {
-            currentSort.asc = !currentSort.asc;
-        } else {
-            currentSort.column = column;
-            currentSort.asc = column !== 'eff'; // default desc for eff, asc for others
-        }
-        renderWorkerTable();
-    }
-
-    function calculateMyStats() {
-        const man = parseFloat(document.getElementById('w-man').value) || 0;
-        const int = parseFloat(document.getElementById('w-int').value) || 0;
-        const end = parseFloat(document.getElementById('w-end').value) || 0;
-        // Merits apply flat % bonus at the end, not to base stats
-        return { man: man, int: int, end: end };
-    }
-
-    function renderWorkerTable() {
-        const tbody = document.getElementById('worker-table-body');
-        if (!tbody) return;
-
-        const myStats = calculateMyStats();
-        let filterComp = document.getElementById('w-filter-company').value.toLowerCase().trim();
-        let filterPos = document.getElementById('w-filter-position').value.toLowerCase().trim();
-
-        let excludeComp = false;
-        if (filterComp.startsWith('-')) {
-            excludeComp = true;
-            filterComp = filterComp.substring(1).trim();
-        }
-
-        let tableData = jobsDB.map(job => {
-            const pStat = myStats[job.typeP] || 0;
-            const sStat = myStats[job.typeS] || 0;
-            const totalEff = getPartEff(pStat, job.reqP) + getPartEff(sStat, job.reqS);
-            return { ...job, eff: totalEff };
-        });
-
-        if (filterComp) {
-            if (excludeComp) {
-                tableData = tableData.filter(job => !job.c.toLowerCase().includes(filterComp));
-            } else {
-                tableData = tableData.filter(job => job.c.toLowerCase().includes(filterComp));
-            }
-        }
-        if (filterPos) {
-            tableData = tableData.filter(job => job.p.toLowerCase().includes(filterPos));
-        }
-
-        tableData.sort((a, b) => {
-            let valA = a[currentSort.column];
-            let valB = b[currentSort.column];
-
-            if (typeof valA === 'string') valA = valA.toLowerCase();
-            if (typeof valB === 'string') valB = valB.toLowerCase();
-
-            if (valA < valB) return currentSort.asc ? -1 : 1;
-            if (valA > valB) return currentSort.asc ? 1 : -1;
-            return 0;
-        });
-
-        // Keep track of previously checked items to maintain state during re-renders
-        const checkedBoxes = Array.from(document.querySelectorAll('.worker-checkbox:checked')).map(cb => cb.value);
-
-        let html = '';
-        tableData.forEach(job => {
-            const jobValue = `${job.c}|${job.p}|${job.eff}`;
-            const isChecked = checkedBoxes.includes(jobValue) ? 'checked' : '';
-            html += `
-                <tr>
-                    <td style="text-align: center;"><input type="checkbox" class="worker-checkbox" value="${jobValue}" ${isChecked}></td>
-                    <td>${job.c}</td>
-                    <td>${job.p}</td>
-                    <td>${job.reqP.toLocaleString()} ${job.typeP.toUpperCase()} / ${job.reqS.toLocaleString()} ${job.typeS.toUpperCase()}</td>
-                    <td style="font-weight: bold; color: var(--primary);">${job.eff}</td>
-                </tr>
-            `;
-        });
-        tbody.innerHTML = html;
-
-        // Add listener to limit checkboxes to 3 or any logic needed
-    }
-
-    function generateWorkerHTML() {
-        const man = document.getElementById('w-man').value;
-        const int = document.getElementById('w-int').value;
-        const end = document.getElementById('w-end').value;
-        const merit = document.getElementById('w-merit').value;
-
-        const selectedRadio = document.querySelector('input[name="w-style"]:checked');
-        let workStyleText = "Negotiable";
-        if (selectedRadio) {
-            if (selectedRadio.value === 'salary') workStyleText = "Seeking Daily Salary";
-            if (selectedRadio.value === 'tax') workStyleText = "Willing to Pay Daily Tax";
-            if (selectedRadio.value === 'unpaid') workStyleText = "Unpaid (Working for Perks)";
-        }
-
-        const checkedBoxes = Array.from(document.querySelectorAll('.worker-checkbox:checked'));
-        let jobListHTML = "";
-
-        if(checkedBoxes.length > 0) {
-            jobListHTML = `<strong>🎯 Target Positions & My Expected Eff:</strong><ul style="margin-top: 5px; margin-bottom: 0;">`;
-            checkedBoxes.forEach(cb => {
-                const [comp, pos, eff] = cb.value.split('|');
-                let meritStr = merit > 0 ? ` + ${merit}% merit` : "";
-                jobListHTML += `<li>${comp} - ${pos}: <b>${eff}% eff</b>${meritStr}</li>`;
-            });
-            jobListHTML += "</ul>";
-        } else {
-            jobListHTML = "<i>(Open to any positions matching my stats)</i>";
-        }
-
-        const notes = document.getElementById('w-notes').value;
-        const formattedNotes = notes.replace(/\n/g, "<br>");
-
-        const htmlCode = `<div style="border: 2px solid #ccc; border-radius: 8px; padding: 10px; max-width: 600px; font-family: Arial, sans-serif; background-color: transparent;">
-    <h2 style="margin-top: 0; border-bottom: 2px solid #ccc; padding-bottom: 5px;">Looking for a Job</h2>
-    <div style="margin-bottom: 10px;">
-        <strong>📊 My Base Stats:</strong><br>
-        • MAN: ${Number(man).toLocaleString()}<br>
-        • INT: ${Number(int).toLocaleString()}<br>
-        • END: ${Number(end).toLocaleString()}<br>
-    </div>
-    <div style="margin-bottom: 10px;">
-        <strong>⭐ Merits:</strong> ${merit}/10 Employee Stats<br>
-    </div>
-    <div style="margin-bottom: 10px;">
-        <strong>💼 Work Style:</strong> ${workStyleText}
-    </div>
-    <div style="margin-bottom: 10px;">
-        ${jobListHTML}
-    </div>
-    ${notes ? `<div style="margin-top: 15px; padding: 5px; background-color: rgba(0,0,0,0.05); border-left: 4px solid #ccc;">
-        <strong>💬 Notes:</strong><br>${formattedNotes}
-    </div>` : ''}
-</div>`;
-
-        document.getElementById('w-html').value = htmlCode;
-        document.getElementById('w-preview').innerHTML = htmlCode;
-    }
-
-    function generateHiringHTML() {
-        const comp = document.getElementById('h-company').value;
-        const eff = document.getElementById('h-eff').value;
-        const stars = parseInt(document.getElementById('h-stars').value) || 0;
-        const perks = document.getElementById('h-perks').value;
-        const link = document.getElementById('h-link').value.trim();
-
-        const selectedRadio = document.querySelector('input[name="h-style"]:checked');
-        let workStyleText = "Negotiable";
-        if (selectedRadio) {
-            if (selectedRadio.value === 'paying') workStyleText = "Paying Salary based on Eff";
-            if (selectedRadio.value === 'taxing') workStyleText = "Requiring Daily Tax for Perks";
-            if (selectedRadio.value === 'unpaid') workStyleText = "Unpaid (Mutual Benefit)";
-        }
-
-        let companyPerksHTML = "";
-        if (stars > 0 && window.TORN_COMPANY_SPECIALS && window.TORN_COMPANY_SPECIALS[comp]) {
-            const companySpecials = window.TORN_COMPANY_SPECIALS[comp];
-            const unlockedSpecials = companySpecials.filter(special => special.stars <= stars);
-
-            if (unlockedSpecials.length > 0) {
-                companyPerksHTML = `<div style="margin-bottom: 10px;">
-        <strong>✨ Company Perks (${stars}⭐):</strong>
-        <ul style="margin-top: 5px; margin-bottom: 0;">`;
-                unlockedSpecials.forEach(special => {
-                    const costText = special.is_passive ? "Passive" : `${special.cost} JP`;
-                    companyPerksHTML += `<li><b>${special.stars}⭐ ${special.name}</b> (${costText}): <i>${special.effect}</i></li>`;
+        function generateJobsDB() {
+            jobsDB = [];
+            for (const company in window.TORN_COMPANY_POSITIONS) {
+                window.TORN_COMPANY_POSITIONS[company].forEach(pos => {
+                    const stats = pos.recommended_stats;
+                    const sorted = Object.entries(stats).sort((a, b) => b[1] - a[1]);
+                    jobsDB.push({
+                        c: company,
+                        p: pos.rank,
+                        reqP: sorted[0][1], typeP: sorted[0][0].toLowerCase(),
+                        reqS: sorted[1][1], typeS: sorted[1][0].toLowerCase()
+                    });
                 });
-                companyPerksHTML += `</ul></div>`;
             }
         }
 
-        const checkedBoxes = Array.from(document.querySelectorAll('.hiring-checkbox:checked'));
-        let positionsHTML = "";
+        function populateDropdowns() {
+            const hCompany = document.getElementById('h-company');
+            const companies = [...new Set(jobsDB.map(job => job.c))].sort();
+            companies.forEach(comp => hCompany.add(new Option(comp, comp)));
+        }
 
-        if(checkedBoxes.length > 0) {
-            positionsHTML = "<ul>";
-            checkedBoxes.forEach(cb => {
-                const [pos, req] = cb.value.split('|');
-                positionsHTML += `<li><b>${pos}</b> - Required Stats: <i>${req}</i></li>`;
+        function switchTab(tab) {
+            document.querySelectorAll('[id$="-content"]').forEach(c => c.classList.add('hidden'));
+            document.getElementById(`${tab}-content`).classList.remove('hidden');
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active', 'text-gray-400'));
+            document.getElementById(`tab-${tab}`).classList.add('tab-active');
+            document.querySelectorAll('nav button:not(.tab-active)').forEach(b => b.classList.add('text-gray-400'));
+        }
+
+        function getPartEff(stat, req) {
+            if (req <= 0 || stat <= 0) return 0;
+            const baseEff = Math.min(45, (45 / req) * stat);
+            const bonus = Math.max(0, 5 * Math.log2(stat / req));
+            return Math.floor(baseEff + bonus);
+        }
+
+        function renderWorkerTable() {
+            const tbody = document.getElementById('worker-table-body');
+            const man = parseFloat(document.getElementById('w-man').value) || 0;
+            const int = parseFloat(document.getElementById('w-int').value) || 0;
+            const end = parseFloat(document.getElementById('w-end').value) || 0;
+            const merit = parseInt(document.getElementById('w-merit').value) || 0;
+            const stats = { man, int, end };
+            
+            const filterComp = document.getElementById('w-filter-company').value.toLowerCase();
+            const filterPos = document.getElementById('w-filter-position').value.toLowerCase();
+
+            let data = jobsDB.map(job => {
+                const eff = getPartEff(stats[job.typeP], job.reqP) + getPartEff(stats[job.typeS], job.reqS);
+                return { ...job, eff };
             });
-            positionsHTML += "</ul>";
-        } else {
-            positionsHTML = "<i>No specific positions selected. Please ask!</i><br><br>";
+
+            if(filterComp) data = data.filter(j => j.c.toLowerCase().includes(filterComp));
+            if(filterPos) data = data.filter(j => j.p.toLowerCase().includes(filterPos));
+
+            data.sort((a, b) => {
+                let vA = a[currentSort.column], vB = b[currentSort.column];
+                if (typeof vA === 'string') { vA = vA.toLowerCase(); vB = vB.toLowerCase(); }
+                return currentSort.asc ? (vA > vB ? 1 : -1) : (vA < vB ? 1 : -1);
+            });
+
+            tbody.innerHTML = data.map(job => `
+                <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                    <td class="text-center"><input type="checkbox" class="worker-checkbox" value="${job.c}|${job.p}|${job.eff}"></td>
+                    <td class="font-bold">${job.c}</td>
+                    <td>${job.p}</td>
+                    <td class="text-[10px] text-gray-500">${job.reqP.toLocaleString()} ${job.typeP.toUpperCase()} / ${job.reqS.toLocaleString()} ${job.typeS.toUpperCase()}</td>
+                    <td class="text-center font-black text-blue-600">${job.eff}</td>
+                </tr>
+            `).join('');
         }
 
-        const formattedPerks = perks.replace(/\n/g, "<br>");
+        function sortWorkerTable(col) {
+            currentSort.asc = (currentSort.column === col) ? !currentSort.asc : (col !== 'eff');
+            currentSort.column = col;
+            renderWorkerTable();
+        }
 
-        const htmlCode = `<div style="border: 2px solid #ccc; border-radius: 8px; padding: 10px; max-width: 600px; font-family: Arial, sans-serif; background-color: transparent;">
-    <h2 style="margin-top: 0; border-bottom: 2px solid #ccc; padding-bottom: 5px;">🏢 Hiring: ${comp} ${stars > 0 ? `(${stars}⭐)` : ''}</h2>
-    <p>We are currently looking for dedicated workers to join our team!</p>
+        function renderHiringTable() {
+            const comp = document.getElementById('h-company').value;
+            const targetEff = parseFloat(document.getElementById('h-eff').value) || 100;
+            document.getElementById('target-eff-display').innerText = targetEff;
+            
+            const positions = jobsDB.filter(j => j.c === comp);
+            const tbody = document.getElementById('hiring-table-body');
 
-    <div style="margin-bottom: 10px;">
-        <strong>🎯 Target Efficiency:</strong> <b>${eff} Eff</b><br>
-    </div>
-    <div style="margin-bottom: 10px;">
-        <strong>💼 Work Style:</strong> ${workStyleText}<br>
-    </div>
-    <div style="margin-bottom: 10px;">
-        <strong>📌 Positions Open:</strong><br>
-        ${positionsHTML}
-    </div>
-    ${companyPerksHTML}
-    ${formattedPerks ? `<div style="margin-top: 15px; padding: 5px; background-color: rgba(0,0,0,0.05); border-left: 4px solid #ccc;">
-        <strong>💰 What we offer / Details:</strong><br>${formattedPerks}
-    </div>` : ''}
+            tbody.innerHTML = positions.map(job => {
+                let rP, rS;
+                if (targetEff > 90) {
+                    let mult = Math.pow(2, (targetEff - 90) / 10);
+                    rP = Math.ceil(job.reqP * mult); rS = Math.ceil(job.reqS * mult);
+                } else {
+                    rP = Math.ceil((targetEff / 90) * job.reqP); rS = Math.ceil((targetEff / 90) * job.reqS);
+                }
+                const reqText = `${rP.toLocaleString()} ${job.typeP.toUpperCase()} / ${rS.toLocaleString()} ${job.typeS.toUpperCase()}`;
+                return `
+                    <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                        <td class="text-center"><input type="checkbox" class="hiring-checkbox" value="${job.p}|${reqText}"></td>
+                        <td class="font-bold">${job.p}</td>
+                        <td class="font-black text-blue-600">${reqText}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
 
-    <p style="margin-top: 15px;">If you meet the requirements, please PM me or apply directly!</p>
-    ${link ? `<div style="text-align: center; margin-top: 10px;">
-        <a href="${link}" style="background-color: #3b5998; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">👉 Apply Here 👈</a>
-    </div>` : ''}
+        function generateWorkerHTML() {
+            const man = document.getElementById('w-man').value;
+            const int = document.getElementById('w-int').value;
+            const end = document.getElementById('w-end').value;
+            const merit = document.getElementById('w-merit').value;
+            const style = document.querySelector('input[name="w-style"]:checked').value;
+            const styleText = {salary: "Seeking Salary", tax: "Willing to Pay Tax", unpaid: "Unpaid/Perks"}[style];
+            
+            const selected = Array.from(document.querySelectorAll('.worker-checkbox:checked')).map(cb => {
+                const [c, p, e] = cb.value.split('|');
+                return `<li>${c} - ${p}: <b>${e}% eff</b> ${merit > 0 ? `(+${merit}% Merit)` : ''}</li>`;
+            });
+
+            const html = `
+<div style="border: 2px solid #ddd; border-radius: 10px; padding: 15px; max-width: 500px; font-family: sans-serif; color: #333;">
+    <h2 style="margin-top:0; border-bottom: 2px solid #eee; padding-bottom:5px; color:#2563eb;">📊 Worker Seeking Job</h2>
+    <p><b>Stats:</b> MAN: ${Number(man).toLocaleString()} | INT: ${Number(int).toLocaleString()} | END: ${Number(end).toLocaleString()}</p>
+    <p><b>Merits:</b> ${merit}/10 | <b>Pref:</b> ${styleText}</p>
+    ${selected.length > 0 ? `<b>Targeting:</b><ul style="margin:5px 0; padding-left:20px;">${selected.join('')}</ul>` : '<i>Open to all offers!</i>'}
+    ${document.getElementById('w-notes').value ? `<div style="margin-top:10px; padding:8px; background:#f8fafc; border-left:4px solid #cbd5e1; font-size:0.9rem;">${document.getElementById('w-notes').value.replace(/\n/g, '<br>')}</div>` : ''}
 </div>`;
+            document.getElementById('w-html').value = html.trim();
+            document.getElementById('w-preview').innerHTML = html;
+        }
 
-        document.getElementById('h-html').value = htmlCode;
-        document.getElementById('h-preview').innerHTML = htmlCode;
-    }
+        function generateHiringHTML() {
+            const comp = document.getElementById('h-company').value;
+            const eff = document.getElementById('h-eff').value;
+            const stars = document.getElementById('h-stars').value;
+            const link = document.getElementById('h-link').value;
+            const style = document.querySelector('input[name="h-style"]:checked').value;
+            const styleText = {paying: "Paying Salary", taxing: "Tax Required", unpaid: "Unpaid"}[style];
 
-    function copyToClipboard(elementId) {
-        const copyText = document.getElementById(elementId);
-        copyText.select();
-        copyText.setSelectionRange(0, 99999);
-        navigator.clipboard.writeText(copyText.value);
-        alert("Copied to clipboard!");
-    }
+            const selected = Array.from(document.querySelectorAll('.hiring-checkbox:checked')).map(cb => {
+                const [p, r] = cb.value.split('|');
+                return `<li><b>${p}</b>: Req Stats: <i>${r}</i></li>`;
+            });
 
-    // Load dropdowns on page load
-    window.onload = function() { loadTheme(); initDropdowns(); };
-
-
-
-    // --- LocalStorage Logic ---
-    const INPUT_IDS = [
-        'w-man', 'w-int', 'w-end', 'w-merit', 'w-notes',
-        'h-eff', 'h-link', 'h-perks', 'h-stars'
-    ]; // h-company loaded later
-
-    function saveData() {
-        INPUT_IDS.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                localStorage.setItem(id, el.value);
+            let perksHTML = "";
+            if(stars > 0 && window.TORN_COMPANY_SPECIALS[comp]) {
+                const specials = window.TORN_COMPANY_SPECIALS[comp].filter(s => s.stars <= stars);
+                perksHTML = `<b>Perks Unlocked (${stars}⭐):</b><ul style="font-size:0.8rem; margin:5px 0;">` + 
+                    specials.map(s => `<li>${s.stars}⭐ ${s.name}: ${s.effect}</li>`).join('') + `</ul>`;
             }
-        });
 
-        const wStyle = document.querySelector('input[name="w-style"]:checked');
-        if (wStyle) localStorage.setItem('w-style', wStyle.value);
-
-        const hStyle = document.querySelector('input[name="h-style"]:checked');
-        if (hStyle) localStorage.setItem('h-style', hStyle.value);
-
-        const hCompany = document.getElementById('h-company');
-        if (hCompany) localStorage.setItem('h-company', hCompany.value);
-    }
-
-    function loadData() {
-        INPUT_IDS.forEach(id => {
-            const val = localStorage.getItem(id);
-            if (val !== null) {
-                const el = document.getElementById(id);
-                if (el) el.value = val;
-            }
-        });
-
-        const wStyleVal = localStorage.getItem('w-style');
-        if (wStyleVal) {
-            const r = document.querySelector(`input[name="w-style"][value="${wStyleVal}"]`);
-            if (r) r.checked = true;
+            const html = `
+<div style="border: 2px solid #ddd; border-radius: 10px; padding: 15px; max-width: 500px; font-family: sans-serif; color: #333;">
+    <h2 style="margin-top:0; border-bottom: 2px solid #eee; padding-bottom:5px; color:#2563eb;">🏢 Hiring: ${comp} (${stars}⭐)</h2>
+    <p><b>Target:</b> ${eff}% Efficiency | <b>Offer:</b> ${styleText}</p>
+    ${selected.length > 0 ? `<b>Open Roles:</b><ul style="margin:5px 0; padding-left:20px;">${selected.join('')}</ul>` : ''}
+    ${perksHTML}
+    ${document.getElementById('h-perks').value ? `<div style="margin-top:10px; padding:8px; background:#f8fafc; border-left:4px solid #cbd5e1;"><b>Info:</b><br>${document.getElementById('h-perks').value.replace(/\n/g, '<br>')}</div>` : ''}
+    ${link ? `<div style="text-align:center; margin-top:15px;"><a href="${link}" style="background:#2563eb; color:white; padding:10px 20px; border-radius:6px; text-decoration:none; font-weight:bold;">Apply Here</a></div>` : ''}
+</div>`;
+            document.getElementById('h-html').value = html.trim();
+            document.getElementById('h-preview').innerHTML = html;
         }
 
-        const hStyleVal = localStorage.getItem('h-style');
-        if (hStyleVal) {
-            const r = document.querySelector(`input[name="h-style"][value="${hStyleVal}"]`);
-            if (r) r.checked = true;
-        }
-    }
-
-    function clearData() {
-        if(confirm("Are you sure you want to clear all your saved inputs?")) {
-            INPUT_IDS.forEach(id => localStorage.removeItem(id));
-            localStorage.removeItem('w-style');
-            localStorage.removeItem('h-style');
-            localStorage.removeItem('h-company');
-            location.reload();
-        }
-    }
-
-    // Attach listeners to save on change
-    function attachSaveListeners() {
-        INPUT_IDS.forEach(id => {
+        function copyToClipboard(id) {
             const el = document.getElementById(id);
-            if(el) {
-                el.addEventListener('input', saveData);
+            el.select();
+            document.execCommand('copy');
+            alert("Copied!");
+        }
+
+        function saveData() {
+            const inputs = ['w-man', 'w-int', 'w-end', 'w-merit', 'w-notes', 'h-eff', 'h-link', 'h-perks', 'h-stars', 'h-company'];
+            inputs.forEach(id => localStorage.setItem(id, document.getElementById(id).value));
+            const wStyle = document.querySelector('input[name="w-style"]:checked');
+            if(wStyle) localStorage.setItem('w-style', wStyle.value);
+            const hStyle = document.querySelector('input[name="h-style"]:checked');
+            if(hStyle) localStorage.setItem('h-style', hStyle.value);
+        }
+
+        function loadData() {
+            const inputs = ['w-man', 'w-int', 'w-end', 'w-merit', 'w-notes', 'h-eff', 'h-link', 'h-perks', 'h-stars', 'h-company'];
+            inputs.forEach(id => {
+                const val = localStorage.getItem(id);
+                if(val !== null) document.getElementById(id).value = val;
+            });
+            ['w-style', 'h-style'].forEach(name => {
+                const val = localStorage.getItem(name);
+                if(val) {
+                    const rb = document.querySelector(`input[name="${name}"][value="${val}"]`);
+                    if(rb) rb.checked = true;
+                }
+            });
+        }
+
+        function clearData() { if(confirm("Clear all?")) { localStorage.clear(); location.reload(); } }
+
+        function setTheme(theme) {
+            document.body.classList.remove('light-theme', 'dark-theme');
+            document.body.classList.add(`${theme}-theme`);
+            localStorage.setItem('site-theme', theme);
+            const lBtn = document.getElementById('themeBtn-light'), dBtn = document.getElementById('themeBtn-dark');
+            if(theme === 'dark') { dBtn.classList.add('text-blue-500'); lBtn.classList.remove('text-blue-500'); }
+            else { lBtn.classList.add('text-blue-500'); dBtn.classList.remove('text-blue-500'); }
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem('site-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            setTheme(saved);
+        }
+
+        function attachSaveListeners() {
+            document.querySelectorAll('input, select, textarea').forEach(el => {
                 el.addEventListener('change', saveData);
-            }
-        });
-        document.querySelectorAll('input[name="w-style"], input[name="h-style"]').forEach(el => {
-            el.addEventListener('change', saveData);
-        });
-
-        const hCompany = document.getElementById('h-company');
-        if(hCompany) {
-            hCompany.addEventListener('change', saveData);
-        }
-    }
-
-    // Theme Functionality
-    function setTheme(theme) {
-        const body = document.body;
-        if (theme === 'dark') {
-            body.classList.remove('light-theme');
-            body.classList.add('dark-theme');
-            localStorage.setItem('theme', 'dark');
-            updateThemeButtons('dark');
-        } else {
-            body.classList.remove('dark-theme');
-            body.classList.add('light-theme');
-            localStorage.setItem('theme', 'light');
-            updateThemeButtons('light');
-        }
-    }
-
-    function updateThemeButtons(activeTheme) {
-        const lightBtn = document.getElementById('themeBtn-light');
-        const darkBtn = document.getElementById('themeBtn-dark');
-
-        if (lightBtn && darkBtn) {
-            if (activeTheme === 'light') {
-                lightBtn.classList.add('text-yellow-500');
-                lightBtn.classList.remove('text-theme-text-muted');
-                darkBtn.classList.remove('text-indigo-400');
-                darkBtn.classList.add('text-theme-text-muted');
-            } else {
-                darkBtn.classList.add('text-indigo-400');
-                darkBtn.classList.remove('text-theme-text-muted');
-                lightBtn.classList.remove('text-yellow-500');
-                lightBtn.classList.add('text-theme-text-muted');
-            }
-        }
-    }
-
-    function loadTheme() {
-        let savedTheme = localStorage.getItem('theme');
-        if (!savedTheme) {
-            // Fallback to OS preference
-            const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            savedTheme = isDark ? 'dark' : 'light';
+                el.addEventListener('input', saveData);
+            });
         }
 
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-theme');
-            updateThemeButtons('dark');
-        } else {
-            document.body.classList.add('light-theme');
-            updateThemeButtons('light');
-        }
-    }
-
-</script>
-
+        window.onload = init;
+    </script>
 </body>
 </html>
