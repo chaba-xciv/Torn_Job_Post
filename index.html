@@ -14,48 +14,51 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
         :root {
-            /* Light Theme */
-            --bg-color: #f0f4f8;
+            /* Light Theme - Minimal */
+            --bg-color: #fafafa;
             --card-bg: #ffffff;
             --card-bg-rgb: 255,255,255;
-            --text-main: #1a202c;
-            --text-muted: #718096;
-            --primary: #0ea5e9;
-            --primary-hover: #0284c7;
-            --border: #cbd5e0;
-            --highlight: #e6f2ff;
-            --surface: #edf2f7;
-            --success: #22863a;
-            --danger: #ec2f45;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --border: #e5e7eb;
+            --divider: #f3f4f6;
+            --success: #10b981;
+            --danger: #ef4444;
         }
 
         body.dark-theme {
-            /* Dark Theme */
-            --bg-color: #0d1117;
-            --card-bg: #1c2128;
-            --card-bg-rgb: 28,33,40;
-            --text-main: #e6edf3;
-            --text-muted: #8b949e;
-            --primary: #58a6ff;
-            --primary-hover: #79c0ff;
-            --border: #30363d;
-            --highlight: #161b22;
-            --surface: #0d1117;
-            --success: #3fb950;
-            --danger: #f85149;
+            /* Dark Theme - Minimal */
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --card-bg-rgb: 30,41,59;
+            --text-main: #f1f5f9;
+            --text-muted: #cbd5e1;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --border: #334155;
+            --divider: #1e293b;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            transition: background-color 0.25s ease, color 0.25s ease;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            margin: 0;
+            padding: 0;
         }
 
-        /* ป้องกันตารางดันขอบ */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
@@ -64,122 +67,162 @@
 
         .data-table {
             width: 100%;
-            min-width: 600px; /* บังคับ Scroll แนวนอนถ้าจอแคบเกินไป */
+            border-collapse: collapse;
+            font-size: 14px;
         }
 
         .data-table th {
             background-color: var(--primary);
             color: white;
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border: none;
             position: sticky;
             top: 0;
             z-index: 10;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            padding: 10px;
         }
 
         .data-table td {
-            padding: 8px 10px;
+            padding: 12px 14px;
             border-bottom: 1px solid var(--border);
-            font-size: 0.85rem;
+            vertical-align: middle;
         }
 
-        /* ปรับความสูง Scrollbar */
+        .data-table tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: var(--divider);
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
         .custom-scroll {
-            max-height: 400px;
+            max-height: 420px;
             overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
         }
 
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
         .tab-active {
             color: var(--primary) !important;
-            border-bottom: 3px solid var(--primary);
-            background-color: var(--highlight);
-        }
-
-        /* Glassmorphism for floating controls */
-        .floating-ui {
-            background: rgba(var(--card-bg-rgb), 0.88);
-            backdrop-filter: blur(16px);
+            border-bottom: 2px solid var(--primary);
+            background-color: transparent;
         }
 
         input, select, textarea {
             background-color: var(--card-bg) !important;
             color: var(--text-main) !important;
             border: 1px solid var(--border) !important;
+            font-size: 14px !important;
+            transition: border-color 0.2s ease !important;
+            font-family: inherit !important;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1) !important;
         }
 
         .preview-area {
-            background-color: var(--surface);
+            background-color: var(--card-bg);
             color: var(--text-main);
             border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        h3 {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin: 0 0 12px 0;
+            color: var(--primary);
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-muted);
         }
     </style>
 </head>
 <body class="min-h-screen">
 
     <!-- Floating UI -->
-    <div class="fixed top-4 right-4 z-50 flex items-center gap-2 p-1.5 bg-white/90 dark:bg-slate-950/80 shadow-2xl rounded-full border border-slate-200 dark:border-slate-700">
-        <button onclick="clearData()" class="w-8 h-8 rounded-full flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors" title="Clear Data">
+    <div class="fixed top-4 right-4 z-50 flex items-center gap-3 p-2 bg-white dark:bg-slate-900 shadow-sm border border-gray-200 dark:border-gray-700 rounded-lg">
+        <button onclick="clearData()" class="w-8 h-8 rounded flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors" title="Clear Data">
             <i class="fa-solid fa-trash-can text-sm"></i>
         </button>
         <div class="w-px h-5 bg-gray-300 dark:bg-gray-600"></div>
-        <button onclick="setTheme('light')" id="themeBtn-light" class="w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+        <button onclick="setTheme('light')" id="themeBtn-light" class="w-8 h-8 rounded flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
             <i class="fa-solid fa-sun text-sm"></i>
         </button>
-        <button onclick="setTheme('dark')" id="themeBtn-dark" class="w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+        <button onclick="setTheme('dark')" id="themeBtn-dark" class="w-8 h-8 rounded flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
             <i class="fa-solid fa-moon text-sm"></i>
         </button>
     </div>
 
-    <div class="max-w-[1400px] mx-auto px-4 py-6">
+    <div class="max-w-[1200px] mx-auto px-4 py-4">
         <!-- Header -->
-        <header class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-black tracking-tight text-sky-600 dark:text-sky-400 uppercase">Torn Forum Builder</h1>
-                <p class="text-sm text-slate-500 dark:text-slate-400">Generate professional job & recruitment posts</p>
-            </div>
+        <header class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-1">Torn Forum Builder</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Create professional job & recruitment posts</p>
         </header>
 
         <!-- Main Dashboard -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
             <!-- Navigation -->
-            <nav class="flex border-b border-gray-200 dark:border-gray-700">
-                <button onclick="switchTab('worker')" id="tab-worker" class="flex-1 py-4 font-bold text-sm uppercase tracking-widest transition-all tab-active">
+            <div class="flex border-b border-gray-200 dark:border-gray-700">
+                <button onclick="switchTab('worker')" id="tab-worker" class="flex-1 px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 border-b-2 border-transparent transition-all tab-active hover:text-gray-900 dark:hover:text-white">
                     <i class="fa-solid fa-user-tag mr-2"></i>Worker Stats
                 </button>
-                <button onclick="switchTab('hiring')" id="tab-hiring" class="flex-1 py-4 font-bold text-sm uppercase tracking-widest transition-all text-gray-400">
+                <button onclick="switchTab('hiring')" id="tab-hiring" class="flex-1 px-6 py-3 text-sm font-semibold text-gray-500 dark:text-gray-400 border-b-2 border-transparent transition-all hover:text-gray-700 dark:hover:text-gray-300">
                     <i class="fa-solid fa-briefcase mr-2"></i>Employer/Hiring
                 </button>
-            </nav>
+            </div>
 
             <!-- Content -->
-            <div class="p-4 md:p-6">
+            <div class="p-6">
                 <!-- Worker Section -->
-                <div id="worker-content" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div id="worker-content" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Left: Form -->
-                    <div class="lg:col-span-4 space-y-6">
-                        <div class="bg-slate-50 dark:bg-slate-950/60 p-4 rounded-xl space-y-4 border border-slate-200 dark:border-slate-700">
-                            <h3 class="font-bold text-sky-600 uppercase text-xs tracking-widest">1. Your Statistics</h3>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase">Manual</label>
-                                    <input type="number" id="w-man" value="0" oninput="renderWorkerTable()" class="w-full p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                    <div class="lg:col-span-1">
+                        <!-- Stats Section -->
+                        <div class="mb-4">
+                            <h3>Your Statistics</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <label>Manual</label>
+                                    <input type="number" id="w-man" value="0" oninput="renderWorkerTable()" class="w-full px-3 py-2 rounded-lg border">
                                 </div>
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase">Intelligence</label>
-                                    <input type="number" id="w-int" value="0" oninput="renderWorkerTable()" class="w-full p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                                <div>
+                                    <label>Intelligence</label>
+                                    <input type="number" id="w-int" value="0" oninput="renderWorkerTable()" class="w-full px-3 py-2 rounded-lg border">
                                 </div>
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase">Endurance</label>
-                                    <input type="number" id="w-end" value="0" oninput="renderWorkerTable()" class="w-full p-2 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                                <div>
+                                    <label>Endurance</label>
+                                    <input type="number" id="w-end" value="0" oninput="renderWorkerTable()" class="w-full px-3 py-2 rounded-lg border">
                                 </div>
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase">Merits (Stats)</label>
-                                    <select id="w-merit" onchange="renderWorkerTable()" class="w-full p-2 rounded-lg text-sm outline-none">
+                                <div>
+                                    <label>Merits (Stats)</label>
+                                    <select id="w-merit" onchange="renderWorkerTable()" class="w-full px-3 py-2 rounded-lg border">
                                         <option value="0">0/10 (+0%)</option>
                                         <script>for(let i=1;i<=10;i++) document.write(`<option value="${i}">${i}/10 (+${i}%)</option>`)</script>
                                     </select>
@@ -187,147 +230,160 @@
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
-                            <h3 class="font-bold text-blue-600 uppercase text-xs tracking-widest mb-3">2. Work Preference</h3>
-                            <div class="flex flex-wrap gap-2 mb-4">
-                                <label class="flex-1 flex items-center justify-center gap-2 cursor-pointer bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700">
-                                    <input type="radio" name="w-style" value="salary" checked> <span class="text-xs">Salary</span>
+                        <!-- Work Preference -->
+                        <div class="mb-4">
+                            <h3>Work Preference</h3>
+                            <div class="space-y-2 mb-3">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="w-style" value="salary" checked> <span class="text-sm">Seeking Salary</span>
                                 </label>
-                                <label class="flex-1 flex items-center justify-center gap-2 cursor-pointer bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700">
-                                    <input type="radio" name="w-style" value="tax"> <span class="text-xs">Pay Tax</span>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="w-style" value="tax"> <span class="text-sm">Prefer Tax</span>
                                 </label>
-                                <label class="flex-1 flex items-center justify-center gap-2 cursor-pointer bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700">
-                                    <input type="radio" name="w-style" value="unpaid"> <span class="text-xs">Free</span>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="w-style" value="unpaid"> <span class="text-sm">Open to Free/Perks</span>
                                 </label>
                             </div>
-                            <textarea id="w-notes" rows="2" class="w-full p-2 rounded-lg text-sm outline-none" placeholder="Add custom notes..."></textarea>
+                            <textarea id="w-notes" rows="2" class="w-full px-3 py-2 rounded-lg border text-sm" placeholder="Additional notes..."></textarea>
                         </div>
 
-                        <button onclick="generateWorkerHTML()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl shadow-xl transition-all uppercase tracking-tighter">
-                            Generate HTML Post
+                        <button onclick="generateWorkerHTML()" class="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm">
+                            Generate Post
                         </button>
                     </div>
 
                     <!-- Right: Table & Results -->
-                    <div class="lg:col-span-8 space-y-4 min-w-0"> <!-- min-w-0 ช่วยแก้ปัญหา Grid ล้นขอบ -->
+                    <div class="lg:col-span-2 space-y-4">
+
+                        <!-- Filter -->
                         <div class="flex gap-2">
-                            <input type="text" id="w-filter-company" oninput="renderWorkerTable()" class="flex-1 p-2 rounded-lg text-sm border" placeholder="Filter Company...">
-                            <input type="text" id="w-filter-position" oninput="renderWorkerTable()" class="flex-1 p-2 rounded-lg text-sm border" placeholder="Filter Position...">
+                            <input type="text" id="w-filter-company" oninput="renderWorkerTable()" class="flex-1 px-3 py-2 rounded-lg border text-sm" placeholder="Filter Company...">
+                            <input type="text" id="w-filter-position" oninput="renderWorkerTable()" class="flex-1 px-3 py-2 rounded-lg border text-sm" placeholder="Filter Position...">
                         </div>
 
-                        <div class="table-responsive border border-gray-200 dark:border-gray-700 rounded-xl custom-scroll">
+                        <!-- Table -->
+                        <div class="custom-scroll">
                             <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th style="width: 50px;">Select</th>
-                                        <th onclick="sortWorkerTable('c')" class="cursor-pointer">Company ↕</th>
+                                        <th onclick="sortWorkerTable('c')" class="cursor-pointer">Company</th>
                                         <th>Position</th>
                                         <th>Recommended Stats</th>
-                                        <th onclick="sortWorkerTable('eff')" class="cursor-pointer">Your Eff ↕</th>
+                                        <th onclick="sortWorkerTable('eff')" class="cursor-pointer">Your Eff</th>
                                     </tr>
                                 </thead>
                                 <tbody id="worker-table-body"></tbody>
                             </table>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase">HTML Forum Code</label>
-                                <textarea id="w-html" readonly class="w-full h-32 p-2 text-[10px] font-mono rounded-lg bg-gray-50 dark:bg-gray-900 border" placeholder="Code will appear here..."></textarea>
-                                <button onclick="copyToClipboard('w-html')" class="w-full bg-emerald-600 text-white text-xs font-bold py-2 rounded-lg transition-colors">Copy Code</button>
+                        <!-- Results -->
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <label class="text-sm font-medium mb-2 block">HTML Forum Code</label>
+                                <textarea id="w-html" readonly class="w-full h-40 px-3 py-2 rounded-lg border text-xs font-mono bg-gray-50 dark:bg-slate-900"></textarea>
+                                <button onclick="copyToClipboard('w-html')" class="w-full mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors text-sm">
+                                    Copy Code
+                                </button>
                             </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase">Live Preview</label>
-                                <div id="w-preview" class="preview-area w-full h-32 p-3 rounded-lg overflow-auto text-xs"></div>
+                            <div>
+                                <label class="text-sm font-medium mb-2 block">Live Preview</label>
+                                <div id="w-preview" class="preview-area h-40 overflow-auto p-4"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Hiring Section -->
-                <div id="hiring-content" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div id="hiring-content" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Left: Form -->
-                    <div class="lg:col-span-4 space-y-4">
-                        <div class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl space-y-3 border border-gray-100 dark:border-gray-800">
-                            <h3 class="font-bold text-blue-600 uppercase text-xs tracking-widest">1. Company Info</h3>
+                    <div class="lg:col-span-1">
+                        <!-- Company Info -->
+                        <div class="mb-4">
+                            <h3>Company Info</h3>
                             <div class="space-y-3">
                                 <div>
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase">Company Type</label>
-                                    <select id="h-company" onchange="renderHiringTable()" class="w-full p-2 rounded-lg text-sm outline-none"></select>
+                                    <label>Company Type</label>
+                                    <select id="h-company" onchange="renderHiringTable()" class="w-full px-3 py-2 rounded-lg border"></select>
                                 </div>
                                 <div class="grid grid-cols-2 gap-2">
                                     <div>
-                                        <label class="text-[10px] font-bold text-gray-400 uppercase">Stars</label>
-                                        <select id="h-stars" class="w-full p-2 rounded-lg text-sm outline-none">
+                                        <label>Stars</label>
+                                        <select id="h-stars" class="w-full px-3 py-2 rounded-lg border">
                                             <script>for(let i=0;i<=10;i++) document.write(`<option value="${i}">${i} ⭐</option>`)</script>
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="text-[10px] font-bold text-gray-400 uppercase">Target Eff (%)</label>
-                                        <input type="number" id="h-eff" value="100" oninput="renderHiringTable()" class="w-full p-2 rounded-lg text-sm outline-none">
+                                        <label>Target Eff (%)</label>
+                                        <input type="number" id="h-eff" value="100" oninput="renderHiringTable()" class="w-full px-3 py-2 rounded-lg border">
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase">Application Link</label>
-                                    <input type="text" id="h-link" class="w-full p-2 rounded-lg text-sm outline-none" placeholder="https://www.torn.com/...">
+                                    <label>Application Link</label>
+                                    <input type="text" id="h-link" class="w-full px-3 py-2 rounded-lg border text-sm" placeholder="https://www.torn.com/...">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
-                            <h3 class="font-bold text-blue-600 uppercase text-xs tracking-widest mb-3">2. Work Style & Offer</h3>
-                            <div class="flex gap-2 mb-3">
-                                <label class="flex-1 flex items-center justify-center gap-1 cursor-pointer bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700">
-                                    <input type="radio" name="h-style" value="paying" checked> <span class="text-[10px]">Salary</span>
+                        <!-- Work Style -->
+                        <div class="mb-4">
+                            <h3>Work Style & Offer</h3>
+                            <div class="space-y-2 mb-3">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="h-style" value="paying" checked> <span class="text-sm">Paying Salary</span>
                                 </label>
-                                <label class="flex-1 flex items-center justify-center gap-1 cursor-pointer bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700">
-                                    <input type="radio" name="h-style" value="taxing"> <span class="text-[10px]">Tax</span>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="h-style" value="taxing"> <span class="text-sm">Tax Required</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="h-style" value="unpaid"> <span class="text-sm">Unpaid (Perk Only)</span>
                                 </label>
                             </div>
-                            <textarea id="h-perks" rows="2" class="w-full p-2 rounded-lg text-sm outline-none" placeholder="Trains, pay details..."></textarea>
+                            <textarea id="h-perks" rows="2" class="w-full px-3 py-2 rounded-lg border text-sm" placeholder="Details, benefits..."></textarea>
                         </div>
 
-                        <button onclick="generateHiringHTML()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl uppercase tracking-tighter">
-                            Generate Recruitment Post
+                        <button onclick="generateHiringHTML()" class="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm">
+                            Generate Post
                         </button>
                     </div>
 
                     <!-- Right: Table & Results -->
-                    <div class="lg:col-span-8 space-y-4 min-w-0">
-                        <div class="table-responsive border border-gray-200 dark:border-gray-700 rounded-xl custom-scroll">
+                    <div class="lg:col-span-2 space-y-4">
+                        <!-- Table -->
+                        <div class="custom-scroll">
                             <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th style="width: 50px;">Select</th>
                                         <th>Position</th>
-                                        <th>Recommended Stats (Base)</th>
-                                        <th>Required Stats for <span id="target-eff-display" class="underline">100</span>% Eff</th>
+                                        <th>Base Required</th>
+                                        <th>For <span id="target-eff-display">100</span>% Eff</th>
                                     </tr>
                                 </thead>
                                 <tbody id="hiring-table-body"></tbody>
                             </table>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase">HTML Forum Code</label>
-                                <textarea id="h-html" readonly class="w-full h-32 p-2 text-[10px] font-mono rounded-lg bg-gray-50 dark:bg-gray-900 border"></textarea>
-                                <button onclick="copyToClipboard('h-html')" class="w-full bg-emerald-600 text-white text-xs font-bold py-2 rounded-lg">Copy Code</button>
+                        <!-- Results -->
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <label class="text-sm font-medium mb-2 block">HTML Forum Code</label>
+                                <textarea id="h-html" readonly class="w-full h-40 px-3 py-2 rounded-lg border text-xs font-mono bg-gray-50 dark:bg-slate-900"></textarea>
+                                <button onclick="copyToClipboard('h-html')" class="w-full mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors text-sm">
+                                    Copy Code
+                                </button>
                             </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-gray-400 uppercase">Live Preview</label>
-                                <div id="h-preview" class="preview-area w-full h-32 p-3 rounded-lg overflow-auto text-xs"></div>
+                            <div>
+                                <label class="text-sm font-medium mb-2 block">Live Preview</label>
+                                <div id="h-preview" class="preview-area h-40 overflow-auto p-4"></div>
                             </div>
                         </div>
                     </div>
-                </div>
             </div>
 
             <!-- Footer -->
-            <footer class="bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 p-4 text-center">
-                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">
-                    Dev by <span class="text-blue-500">Jules AI</span> | <a href="https://github.com/chaba-xciv/Torn_Job_Post" class="hover:underline">GitHub</a>
-                </p>
+            <footer class="border-t border-gray-200 dark:border-gray-700 p-4 text-center text-sm text-gray-600 dark:text-gray-400">
+                Dev by <span class="font-medium">Jules AI</span> | <a href="https://github.com/chaba-xciv/Torn_Job_Post" class="hover:underline">GitHub</a>
             </footer>
         </div>
     </div>
@@ -374,9 +430,12 @@
         function switchTab(tab) {
             document.querySelectorAll('[id$="-content"]').forEach(c => c.classList.add('hidden'));
             document.getElementById(`${tab}-content`).classList.remove('hidden');
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active', 'text-gray-400'));
+            document.querySelectorAll('nav button').forEach(b => {
+                b.classList.remove('tab-active');
+                b.classList.add('text-gray-500', 'dark:text-gray-400');
+            });
             document.getElementById(`tab-${tab}`).classList.add('tab-active');
-            document.querySelectorAll('nav button:not(.tab-active)').forEach(b => b.classList.add('text-gray-400'));
+            document.getElementById(`tab-${tab}`).classList.remove('text-gray-500', 'dark:text-gray-400');
         }
 
         function getPartEff(stat, req) {
@@ -412,7 +471,7 @@
             });
 
             tbody.innerHTML = data.map(job => `
-                <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                <tr class="hover:bg-gray-100/50 dark:hover:bg-gray-700/20 transition-colors">
                     <td class="text-center"><input type="checkbox" class="worker-checkbox" value="${job.c}|${job.p}|${job.eff}"></td>
                     <td class="font-bold">${job.c}</td>
                     <td>${job.p}</td>
@@ -448,11 +507,11 @@
                 }
                 const reqText = `${rP.toLocaleString()} ${job.typeP.toUpperCase()} / ${rS.toLocaleString()} ${job.typeS.toUpperCase()}`;
                 return `
-                    <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                    <tr class="hover:bg-gray-100/50 dark:hover:bg-gray-700/20 transition-colors">
                         <td class="text-center"><input type="checkbox" class="hiring-checkbox" value="${job.p}|${reqText}"></td>
                         <td class="font-bold">${job.p}</td>
-                        <td class="text-blue-600 font-semibold">${baseReqText}</td>
-                        <td class="font-black text-blue-600">${reqText}</td>
+                        <td class="text-gray-700 dark:text-gray-300 font-semibold">${baseReqText}</td>
+                        <td class="font-black text-gray-800 dark:text-gray-100">${reqText}</td>
                     </tr>
                 `;
             }).join('');
@@ -472,12 +531,12 @@
             });
 
             const html = `
-<div style="border: 2px solid #ddd; border-radius: 10px; padding: 15px; max-width: 500px; font-family: sans-serif; color: #333;">
-    <h2 style="margin-top:0; border-bottom: 2px solid #eee; padding-bottom:5px; color:#2563eb;">📊 Worker Seeking Job</h2>
-    <p><b>Stats:</b> MAN: ${Number(man).toLocaleString()} | INT: ${Number(int).toLocaleString()} | END: ${Number(end).toLocaleString()}</p>
-    <p><b>Merits:</b> ${merit}/10 | <b>Pref:</b> ${styleText}</p>
-    ${selected.length > 0 ? `<b>Targeting:</b><ul style="margin:5px 0; padding-left:20px;">${selected.join('')}</ul>` : '<i>Open to all offers!</i>'}
-    ${document.getElementById('w-notes').value ? `<div style="margin-top:10px; padding:8px; background:#f8fafc; border-left:4px solid #cbd5e1; font-size:0.9rem;">${document.getElementById('w-notes').value.replace(/\n/g, '<br>')}</div>` : ''}
+<div style="border: 1px solid #e8e8e8; border-radius: 12px; padding: 16px; max-width: 520px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6;">
+    <h2 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0;">📊 Worker Seeking Job</h2>
+    <p style="margin: 8px 0; font-size: 14px;"><b>Stats:</b> MAN: ${Number(man).toLocaleString()} | INT: ${Number(int).toLocaleString()} | END: ${Number(end).toLocaleString()}</p>
+    <p style="margin: 8px 0; font-size: 14px;"><b>Merits:</b> ${merit}/10 | <b>Pref:</b> ${styleText}</p>
+    ${selected.length > 0 ? `<p style="margin: 8px 0; font-size: 14px;"><b>Targeting:</b></p><ul style="margin:4px 0; padding-left:20px; font-size: 14px;">${selected.join('')}</ul>` : '<p style="margin: 8px 0; font-size: 14px; font-style: italic;">Open to all offers!</p>'}
+    ${document.getElementById('w-notes').value ? `<div style="margin-top: 12px; padding: 10px; background: #f9f9f9; border-left: 3px solid #ddd; font-size: 14px; border-radius: 4px;">${document.getElementById('w-notes').value.replace(/\n/g, '<br>')}</div>` : ''}
 </div>`;
             document.getElementById('w-html').value = html.trim();
             document.getElementById('w-preview').innerHTML = html;
@@ -489,7 +548,7 @@
             const stars = document.getElementById('h-stars').value;
             const link = document.getElementById('h-link').value;
             const style = document.querySelector('input[name="h-style"]:checked').value;
-            const styleText = {paying: "Paying Salary", taxing: "Tax Required", unpaid: "Unpaid"}[style];
+            const styleText = {paying: "Paying Salary", taxing: "Tax Required", unpaid: "Unpaid (Perk Only)"}[style];
 
             const selected = Array.from(document.querySelectorAll('.hiring-checkbox:checked')).map(cb => {
                 const [p, r] = cb.value.split('|');
@@ -499,18 +558,18 @@
             let perksHTML = "";
             if(stars > 0 && window.TORN_COMPANY_SPECIALS[comp]) {
                 const specials = window.TORN_COMPANY_SPECIALS[comp].filter(s => s.stars <= stars);
-                perksHTML = `<b>Perks Unlocked (${stars}⭐):</b><ul style="font-size:0.8rem; margin:5px 0;">` + 
+                perksHTML = `<p style="margin: 8px 0; font-size: 14px;"><b>Perks Unlocked (${stars}⭐):</b></p><ul style="margin: 4px 0; padding-left: 20px; font-size: 14px;">` + 
                     specials.map(s => `<li>${s.stars}⭐ ${s.name}: ${s.effect}</li>`).join('') + `</ul>`;
             }
 
             const html = `
-<div style="border: 2px solid #ddd; border-radius: 10px; padding: 15px; max-width: 500px; font-family: sans-serif; color: #333;">
-    <h2 style="margin-top:0; border-bottom: 2px solid #eee; padding-bottom:5px; color:#2563eb;">🏢 Hiring: ${comp} (${stars}⭐)</h2>
-    <p><b>Target:</b> ${eff}% Efficiency | <b>Offer:</b> ${styleText}</p>
-    ${selected.length > 0 ? `<b>Open Roles:</b><ul style="margin:5px 0; padding-left:20px;">${selected.join('')}</ul>` : ''}
+<div style="border: 1px solid #e8e8e8; border-radius: 12px; padding: 16px; max-width: 520px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6;">
+    <h2 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0;">🏢 Hiring: ${comp} (${stars}⭐)</h2>
+    <p style="margin: 8px 0; font-size: 14px;"><b>Target:</b> ${eff}% Efficiency | <b>Offer:</b> ${styleText}</p>
+    ${selected.length > 0 ? `<p style="margin: 8px 0; font-size: 14px;"><b>Open Roles:</b></p><ul style="margin: 4px 0; padding-left: 20px; font-size: 14px;">${selected.join('')}</ul>` : ''}
     ${perksHTML}
-    ${document.getElementById('h-perks').value ? `<div style="margin-top:10px; padding:8px; background:#f8fafc; border-left:4px solid #cbd5e1;"><b>Info:</b><br>${document.getElementById('h-perks').value.replace(/\n/g, '<br>')}</div>` : ''}
-    ${link ? `<div style="text-align:center; margin-top:15px;"><a href="${link}" style="background:#2563eb; color:white; padding:10px 20px; border-radius:6px; text-decoration:none; font-weight:bold;">Apply Here</a></div>` : ''}
+    ${document.getElementById('h-perks').value ? `<div style="margin-top: 12px; padding: 10px; background: #f9f9f9; border-left: 3px solid #ddd; font-size: 14px; border-radius: 4px;"><b>Info:</b><br>${document.getElementById('h-perks').value.replace(/\n/g, '<br>')}</div>` : ''}
+    ${link ? `<div style="text-align: center; margin-top: 14px;"><a href="${link}" style="display: inline-block; background: #f0f0f0; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px; border: 1px solid #ddd; transition: all 0.2s;">Apply Here</a></div>` : ''}
 </div>`;
             document.getElementById('h-html').value = html.trim();
             document.getElementById('h-preview').innerHTML = html;
@@ -560,8 +619,13 @@
             }
             localStorage.setItem('site-theme', theme);
             const lBtn = document.getElementById('themeBtn-light'), dBtn = document.getElementById('themeBtn-dark');
-            if(theme === 'dark') { dBtn.classList.add('text-blue-500'); lBtn.classList.remove('text-blue-500'); }
-            else { lBtn.classList.add('text-blue-500'); dBtn.classList.remove('text-blue-500'); }
+            if(theme === 'dark') { 
+                dBtn.classList.add('text-blue-500'); 
+                lBtn.classList.remove('text-blue-500'); 
+            } else { 
+                lBtn.classList.add('text-blue-500'); 
+                dBtn.classList.remove('text-blue-500'); 
+            }
         }
 
         function loadTheme() {
