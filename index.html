@@ -14,30 +14,38 @@
         :root {
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
+            --card-bg-rgb: 255,255,255;
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
+            --primary: #0ea5e9;
+            --primary-hover: #0284c7;
             --border: #e2e8f0;
-            --highlight: #f1f5f9;
+            --highlight: #e2e8f0;
+            --surface: #f1f5f9;
+            --success: #10b981;
+            --danger: #ef4444;
         }
 
         body.dark-theme {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f1f5f9;
+            --bg-color: #020617;
+            --card-bg: #0f172a;
+            --card-bg-rgb: 15,23,42;
+            --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --primary: #3b82f6;
+            --primary: #38bdf8;
             --primary-hover: #60a5fa;
             --border: #334155;
-            --highlight: #1e293b;
+            --highlight: #1e2937;
+            --surface: #111827;
+            --success: #22c55e;
+            --danger: #f87171;
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            transition: all 0.2s ease;
+            transition: background-color 0.25s ease, color 0.25s ease;
         }
 
         /* ป้องกันตารางดันขอบ */
@@ -87,8 +95,8 @@
 
         /* Glassmorphism for floating controls */
         .floating-ui {
-            background: rgba(var(--card-bg), 0.8);
-            backdrop-filter: blur(8px);
+            background: rgba(var(--card-bg-rgb), 0.88);
+            backdrop-filter: blur(16px);
         }
 
         input, select, textarea {
@@ -98,16 +106,16 @@
         }
 
         .preview-area {
-            background-color: #ffffff; /* บังคับเป็นสีขาวเลียนแบบฟอรั่ม */
-            color: #333333;
-            border: 1px solid #ccc;
+            background-color: var(--surface);
+            color: var(--text-main);
+            border: 1px solid var(--border);
         }
     </style>
 </head>
 <body class="min-h-screen">
 
     <!-- Floating UI -->
-    <div class="fixed top-4 right-4 z-50 flex items-center gap-2 p-1.5 bg-white/90 dark:bg-gray-800/90 shadow-2xl rounded-full border border-gray-200 dark:border-gray-700">
+    <div class="fixed top-4 right-4 z-50 flex items-center gap-2 p-1.5 bg-white/90 dark:bg-slate-950/80 shadow-2xl rounded-full border border-slate-200 dark:border-slate-700">
         <button onclick="clearData()" class="w-8 h-8 rounded-full flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors" title="Clear Data">
             <i class="fa-solid fa-trash-can text-sm"></i>
         </button>
@@ -124,8 +132,8 @@
         <!-- Header -->
         <header class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-                <h1 class="text-2xl font-black tracking-tight text-blue-600 dark:text-blue-400 uppercase">Torn Forum Builder</h1>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Generate professional job & recruitment posts</p>
+                <h1 class="text-2xl font-black tracking-tight text-sky-600 dark:text-sky-400 uppercase">Torn Forum Builder</h1>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Generate professional job & recruitment posts</p>
             </div>
         </header>
 
@@ -147,8 +155,8 @@
                 <div id="worker-content" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <!-- Left: Form -->
                     <div class="lg:col-span-4 space-y-6">
-                        <div class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl space-y-4 border border-gray-100 dark:border-gray-800">
-                            <h3 class="font-bold text-blue-600 uppercase text-xs tracking-widest">1. Your Statistics</h3>
+                        <div class="bg-slate-50 dark:bg-slate-950/60 p-4 rounded-xl space-y-4 border border-slate-200 dark:border-slate-700">
+                            <h3 class="font-bold text-sky-600 uppercase text-xs tracking-widest">1. Your Statistics</h3>
                             <div class="grid grid-cols-2 gap-3">
                                 <div class="space-y-1">
                                     <label class="text-[10px] font-bold text-gray-400 uppercase">Manual</label>
