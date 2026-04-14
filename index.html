@@ -6,39 +6,46 @@
     <title>Torn City - Forum Post Builder</title>
     <!-- Tailwind & FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
         :root {
-            --bg-color: #f8fafc;
+            /* Light Theme */
+            --bg-color: #f0f4f8;
             --card-bg: #ffffff;
             --card-bg-rgb: 255,255,255;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
+            --text-main: #1a202c;
+            --text-muted: #718096;
             --primary: #0ea5e9;
             --primary-hover: #0284c7;
-            --border: #e2e8f0;
-            --highlight: #e2e8f0;
-            --surface: #f1f5f9;
-            --success: #10b981;
-            --danger: #ef4444;
+            --border: #cbd5e0;
+            --highlight: #e6f2ff;
+            --surface: #edf2f7;
+            --success: #22863a;
+            --danger: #ec2f45;
         }
 
         body.dark-theme {
-            --bg-color: #020617;
-            --card-bg: #0f172a;
-            --card-bg-rgb: 15,23,42;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary: #38bdf8;
-            --primary-hover: #60a5fa;
-            --border: #334155;
-            --highlight: #1e2937;
-            --surface: #111827;
-            --success: #22c55e;
-            --danger: #f87171;
+            /* Dark Theme */
+            --bg-color: #0d1117;
+            --card-bg: #1c2128;
+            --card-bg-rgb: 28,33,40;
+            --text-main: #e6edf3;
+            --text-muted: #8b949e;
+            --primary: #58a6ff;
+            --primary-hover: #79c0ff;
+            --border: #30363d;
+            --highlight: #161b22;
+            --surface: #0d1117;
+            --success: #3fb950;
+            --danger: #f85149;
         }
 
         body {
@@ -257,7 +264,7 @@
                                     </div>
                                     <div>
                                         <label class="text-[10px] font-bold text-gray-400 uppercase">Target Eff (%)</label>
-                                        <input type="number" id="h-eff" value="100" class="w-full p-2 rounded-lg text-sm outline-none">
+                                        <input type="number" id="h-eff" value="100" oninput="renderHiringTable()" class="w-full p-2 rounded-lg text-sm outline-none">
                                     </div>
                                 </div>
                                 <div>
@@ -293,6 +300,7 @@
                                     <tr>
                                         <th style="width: 50px;">Select</th>
                                         <th>Position</th>
+                                        <th>Recommended Stats (Base)</th>
                                         <th>Required Stats for <span id="target-eff-display" class="underline">100</span>% Eff</th>
                                     </tr>
                                 </thead>
@@ -429,6 +437,8 @@
             const tbody = document.getElementById('hiring-table-body');
 
             tbody.innerHTML = positions.map(job => {
+                const baseReqText = `${job.reqP.toLocaleString()} ${job.typeP.toUpperCase()} / ${job.reqS.toLocaleString()} ${job.typeS.toUpperCase()}`;
+                
                 let rP, rS;
                 if (targetEff > 90) {
                     let mult = Math.pow(2, (targetEff - 90) / 10);
@@ -441,6 +451,7 @@
                     <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/20">
                         <td class="text-center"><input type="checkbox" class="hiring-checkbox" value="${job.p}|${reqText}"></td>
                         <td class="font-bold">${job.p}</td>
+                        <td class="text-blue-600 font-semibold">${baseReqText}</td>
                         <td class="font-black text-blue-600">${reqText}</td>
                     </tr>
                 `;
@@ -539,8 +550,14 @@
         function clearData() { if(confirm("Clear all?")) { localStorage.clear(); location.reload(); } }
 
         function setTheme(theme) {
+            document.documentElement.classList.remove('dark');
             document.body.classList.remove('light-theme', 'dark-theme');
-            document.body.classList.add(`${theme}-theme`);
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.add('light-theme');
+            }
             localStorage.setItem('site-theme', theme);
             const lBtn = document.getElementById('themeBtn-light'), dBtn = document.getElementById('themeBtn-dark');
             if(theme === 'dark') { dBtn.classList.add('text-blue-500'); lBtn.classList.remove('text-blue-500'); }
